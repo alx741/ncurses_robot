@@ -89,18 +89,65 @@ char getchar(void)
 		RCSTAbits.CREN=1;
 	}
 
-	if ( PIR1bits.RCIF )
-	{
-		PORTB = 0b10000000;
-		return RCREG;
-	}
-	else
-	{
-		return 0;
-	}
+	while( ! PIR1bits.RCIF );
+
+	return RCREG;
 
 }
-unsigned char a;
+
+
+/* Returns 1 if valid command has loaded in COM
+ *
+ * COMMAND syntax (13 chars): 
+ *
+ * 	<x,y>:<f,b>:xxxx,yyyy
+ *
+ * 	x = X axis
+ * 	y = Y axis
+ * 	f = forward
+ * 	b = backward
+ * 	xxxx = duty cycle
+ * 	yyyy = time
+ *
+ */ 
+int get_command(char* command)
+{
+	int i=0;
+	char com[13];
+
+	for(i=0;i<13;i++)
+	{
+		com[i] = getchar();
+	}
+
+	//COMMAND VALIDATION
+	//
+	//<x,y>, <f,b>, special chars
+	if( (com[0]=='x' || com[0]=='y') && (com[1]==':') && (com[2]=='f' || com[2]=='b') && (com[3]==':') && (com[8]==',')
+	//duty cycle
+	&& (com[4]>0x2F && com[4]<0x3A) && (com[5]>0x2F && com[5]<0x3A) && (com[6]>0x2F && com[6]<0x3A) && (com[7]>0x2F && com[7]<0x3A) 
+	//time
+	&& (com[9]>0x2F && com[9]<0x3A) && (com[10]>0x2F && com[10]<0x3A) && (com[11]>0x2F && com[11]<0x3A) 
+	&& (com[12]>0x2F && com[12]<0x3A) )
+	{
+		//STRING COPY
+
+		for(i=0;i<12;i++)
+		{
+			command[i] = com[i];
+		}
+		
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
+
+
+char command[13];
 
 void main(void)
 {
@@ -116,28 +163,14 @@ void main(void)
 	uart_init();
 
 
-	TRISB = 0b00000000;
+	TRISB = 0;
+	PORTB = 0;
 
 
 	while(1)
 	{ 
-		a = getchar();
-
-		if( a == 'a' )
+		if( get_command(command) )
 		{
-			PORTB = 0b00100000;
-		}
-		else if( a == 'b' )
-		{
-			PORTB = 0b00010000;
-		}
-		else if( a == 'c' )
-		{
-			PORTB = 0b00001000;
-		}
-		else if( a == 'd' )
-		{
-			PORTB = 0b00000100;
 		}
 
 	}
