@@ -13,14 +13,20 @@ __code char __at (__CONFIG6H) CONFIG6H = _WRTC_OFF_6H & _WRTB_OFF_6H & _WRTD_OFF
 __code char __at (__CONFIG7L) CONFIG7L = _EBTR0_OFF_7L & _EBTR1_OFF_7L & _EBTR2_OFF_7L & _EBTR3_OFF_7L;
 __code char __at (__CONFIG7H) CONFIG7H = _EBTRB_OFF_7H;
 
+void putchar(char c);
 
-void delay(void)
+void delay(unsigned int delay)
 {
 	unsigned int a = 0;
+	unsigned int i=0;
 
-	while(a < 10000)
+	for(i=0;i<delay;i++)
 	{
-		a = a+1;
+		while(a < 100)
+		{
+			a = a+1;
+		}
+		a=0;
 	}
 }
 
@@ -113,9 +119,10 @@ char getchar(void)
 int get_command(char* command)
 {
 	int i=0;
-	char com[13];
+	char com[8];
+	putchar('>');
 
-	for(i=0;i<13;i++)
+	for(i=0;i<8;i++)
 	{
 		com[i] = getchar();
 	}
@@ -123,16 +130,15 @@ int get_command(char* command)
 	//COMMAND VALIDATION
 	//
 	//<x,y>, <f,b>, special chars
-	if( (com[0]=='x' || com[0]=='y') && (com[1]==':') && (com[2]=='f' || com[2]=='b') && (com[3]==':') && (com[8]==',')
-	//duty cycle
-	&& (com[4]>0x2F && com[4]<0x3A) && (com[5]>0x2F && com[5]<0x3A) && (com[6]>0x2F && com[6]<0x3A) && (com[7]>0x2F && com[7]<0x3A) 
+	if( (com[0]=='x' || com[0]=='y') && (com[1]==':') && (com[2]=='f' || com[2]=='b') && (com[3]==':')
 	//time
-	&& (com[9]>0x2F && com[9]<0x3A) && (com[10]>0x2F && com[10]<0x3A) && (com[11]>0x2F && com[11]<0x3A) 
-	&& (com[12]>0x2F && com[12]<0x3A) )
+	&& (com[4]>0x2F && com[4]<0x3A) && (com[5]>0x2F && com[5]<0x3A) && (com[6]>0x2F && com[6]<0x3A) && (com[7]>0x2F && com[7]<0x3A) 
+	)
+
 	{
 		//STRING COPY
 
-		for(i=0;i<12;i++)
+		for(i=0;i<8;i++)
 		{
 			command[i] = com[i];
 		}
@@ -145,9 +151,78 @@ int get_command(char* command)
 
 
 
+void execute(unsigned int portb, unsigned int time_)
+{
+	PORTB = 0;
+
+	PORTB = portb;
+	delay(time_);
+	PORTB = 0;
+}
+
+unsigned int mult(unsigned int a, unsigned int b)
+{
+	unsigned int result=0;
+	int i=0;
+
+	for(i=0;i<a;i++)
+	{
+		result += b;
+	}
+
+	return result;
+}
 
 
-char command[13];
+unsigned int atoi(char* string)
+{
+	int i=0;
+	unsigned int integer=0;
+	unsigned int values[4];
+
+	for(i=0;i<4;i++)
+	{
+		if( string[i] == '0' )
+			values[i] = 0;
+		if( string[i] == '1' )
+			values[i] = 1;
+		if( string[i] == '2' )
+			values[i] = 2;
+		if( string[i] == '3' )
+			values[i] = 3;
+		if( string[i] == '4' )
+			values[i] = 4;
+		if( string[i] == '5' )
+			values[i] = 5;
+		if( string[i] == '6' )
+			values[i] = 6;
+		if( string[i] == '7' )
+			values[i] = 7;
+		if( string[i] == '8' )
+			values[i] = 8;
+		if( string[i] == '9' )
+			values[i] = 9;
+	}
+
+	for(i=0;i<4;i++)
+	{
+		if(i==0)
+			integer += mult(values[0], 1000);
+		if(i==1)
+			integer += mult(values[1], 100);
+		if(i==2)
+			integer += mult(values[2], 10);
+		if(i==3)
+			integer += mult(values[3], 1);
+	}
+	
+	return integer;
+}
+
+
+
+char command[8];
+char time[4];
 
 void main(void)
 {
@@ -163,6 +238,7 @@ void main(void)
 	uart_init();
 
 
+	//PORTB INIT
 	TRISB = 0;
 	PORTB = 0;
 
@@ -171,6 +247,20 @@ void main(void)
 	{ 
 		if( get_command(command) )
 		{
+
+			time[0] = command[4];
+			time[1] = command[5];
+			time[2] = command[6];
+			time[3] = command[7];
+
+			if(command[0]=='x' && command[2]=='f')
+				execute(0x20, atoi(time)); //PIN 38
+			if(command[0]=='x' && command[2]=='b')
+				execute(0x10, atoi(time)); //PIN 37
+			if(command[0]=='y' && command[2]=='f')
+				execute(0x08, atoi(time)); //PIN 36
+			if(command[0]=='y' && command[2]=='b')
+				execute(0x04, atoi(time)); //PIN 35
 		}
 
 	}
