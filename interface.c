@@ -3,6 +3,7 @@
 #include <form.h>
 #include <panel.h>
 #include <string.h>
+#include <stdlib.h>
 
 /* Global window pointers */
 WINDOW* WIN_BOARD=0;
@@ -418,6 +419,37 @@ int put_info(int energy,char e_lvl, int x, int y, char dir)
 /*                     MENU                         */
 /* ################################################ */
 
+
+/* Takes OPTION string from menu
+ *
+ * Calls respective menu option panels
+ * TODO: replace "mvprintw" -> panels creation functions
+ */
+void menu_handler(char* option)
+{
+	if( strcmp(option, "Nuevo Juego")==0 )
+	{
+		get_newgame_form();
+	}
+	else if( strcmp(option, "Saltar")==0 )
+	{
+		mvprintw(0,0,option);
+	}
+	else if( strcmp(option, "Teletransportar")==0 )
+	{
+		mvprintw(0,0,option);
+	}
+	else if( strcmp(option, "Ir al origen")==0 )
+	{
+		mvprintw(0,0,option);
+	}
+	else if( strcmp(option, "Cargar Instrucciones")==0 )
+	{
+		mvprintw(0,0,option);
+	}
+}
+
+
 /* Create Menu window and draws it on X,Y
  * Height = 15
  * Width = 30
@@ -478,40 +510,204 @@ int get_menu_win(int x, int y)
 	return 1;
 }
 
+/* ////////////////   MENU OPTION FORMS  \\\\\\\\\\\\\\\ */
 
-/* Takes OPTION string from menu
+/* Create -new game- panel form
+ * at center of the screen
  *
- * Calls respective menu option panels
- * TODO: replace "mvprintw" -> panels creation functions
+ * returns 1 if susses
  */
-void menu_handler(char* option)
-{
-	if( strcmp(option, "Nuevo Juego")==0 )
-	{
-		mvprintw(0,0,option);
-	}
-	else if( strcmp(option, "Saltar")==0 )
-	{
-		mvprintw(0,0,option);
-	}
-	else if( strcmp(option, "Teletransportar")==0 )
-	{
-		mvprintw(0,0,option);
-	}
-	else if( strcmp(option, "Ir al origen")==0 )
-	{
-		mvprintw(0,0,option);
-	}
-	else if( strcmp(option, "Cargar Instrucciones")==0 )
-	{
-		mvprintw(0,0,option);
-	}
-}
-
-/* ////////////////   MENU OPTION PANELS  \\\\\\\\\\\\\\\ */
-
 int get_newgame_form()
 {
+	int win_menu_newgame_height = 12;
+	int win_menu_newgame_width = 40;
+	int win_menu_newgame_y =  5;
+	int win_menu_newgame_x = (COLS-40)/2;
+
+	WINDOW* win_menu_newgame = newwin(win_menu_newgame_height, win_menu_newgame_width, win_menu_newgame_y, win_menu_newgame_x);
+	keypad(win_menu_newgame, TRUE);
+	PANEL* pan_menu_newgame = new_panel(win_menu_newgame);
+
+
+
+	/*   -----  CREATE FORM ----- */
+	// Fields config
+	FIELD* fields_menu_newgame[4];
+	fields_menu_newgame[0] = new_field(1,10,1,1,0,0);
+	fields_menu_newgame[1] = new_field(1,10,4,1,0,0);
+	fields_menu_newgame[2] = new_field(1,10,6,1,0,0);
+	fields_menu_newgame[3] = NULL;
+
+	set_field_back(fields_menu_newgame[0], A_UNDERLINE);
+	field_opts_on(fields_menu_newgame[0], O_EDIT);
+	field_opts_off(fields_menu_newgame[0], O_AUTOSKIP);
+	set_field_type(fields_menu_newgame[0], TYPE_INTEGER, 0, 1, 30); // Validate: Number, 1-30
+
+	set_field_back(fields_menu_newgame[1], A_UNDERLINE);
+	field_opts_on(fields_menu_newgame[1], O_EDIT);
+	field_opts_off(fields_menu_newgame[1], O_AUTOSKIP);
+	set_field_type(fields_menu_newgame[1], TYPE_INTEGER, 0, 3, 8); // Validate: Number, 3-8
+
+	set_field_back(fields_menu_newgame[2], A_UNDERLINE);
+	field_opts_on(fields_menu_newgame[2], O_EDIT);
+	field_opts_off(fields_menu_newgame[2], O_AUTOSKIP);
+	set_field_type(fields_menu_newgame[2], TYPE_INTEGER, 0, 3, 8); // Validate: Number, 3-8
+
+	// Create FORM
+	FORM* form_menu_newgame = new_form(fields_menu_newgame);
+	set_form_win(form_menu_newgame, win_menu_newgame);
+	set_form_sub(form_menu_newgame, derwin(win_menu_newgame, 8, 15, 1, 24));
+
+
+
+	/*   -----  CREATE MENU ----- */ 
+
+	char* options[] = { 
+				"Aceptar",
+				"Cancelar",
+				(char*) NULL,
+			};
+	int n_options = sizeof(options) / sizeof(options[0]);
+	int i;
+
+	ITEM** items = (ITEM**)calloc(n_options, sizeof(ITEM*));
+
+	for(i=0;i<n_options;i++)
+	{
+		items[i] = new_item(options[i], "");
+		set_item_userptr(items[i], menu_handler);
+	}
+
+	MENU* menu = new_menu((ITEM**)items);
+
+	set_menu_win(menu, win_menu_newgame);
+	set_menu_sub(menu, derwin(win_menu_newgame, 1, 30, 9, 8));
+	set_menu_format(menu, 1, 2);
+	set_menu_mark(menu, " ");
+
+	
+	
+	/*   -----  DRAW ----- */ 
+	
+	// Frame
+	wattron(win_menu_newgame, COLOR_PAIR(8) | A_BOLD);
+	box(win_menu_newgame, 0, 0);
+	mvwprintw(win_menu_newgame, 0, 8, " Nuevo Juego ");
+	wattroff(win_menu_newgame, COLOR_PAIR(8) | A_BOLD);
+
+	// Field labels
+	mvwprintw(win_menu_newgame, 2, 2, "Numero de Barreras: ");
+	mvwprintw(win_menu_newgame, 5, 2, "Salida [X] <3-8> : ");
+	mvwprintw(win_menu_newgame, 7, 2, "Salida [Y] <3-8> : ");
+
+	// Post form, menu
+	post_form(form_menu_newgame);
+	post_menu(menu); 
+	update_panels();
+	doupdate();
+	wrefresh(win_menu_newgame);
+
+
+
+	/*   -----  HANDLE ----- */ 
+
+	int c;
+
+	while(1)
+	{
+		c = wgetch(win_menu_newgame);
+
+		if( c == KEY_DOWN )
+		{
+			form_driver(form_menu_newgame, REQ_NEXT_FIELD);
+		}
+		else if( c == KEY_UP )
+		{
+			form_driver(form_menu_newgame, REQ_PREV_FIELD);
+		}
+		else if( c == KEY_LEFT )
+		{
+			menu_driver(menu, REQ_LEFT_ITEM);
+		}
+		else if( c == KEY_RIGHT )
+		{
+			menu_driver(menu, REQ_RIGHT_ITEM);
+		}
+		else if( c == 127 ) // Back Space
+		{
+			form_driver(form_menu_newgame, REQ_CLR_FIELD);
+		}
+		else if( c == 10 ) // Enter
+		{
+			if( strcmp( item_name(current_item(menu)), "Cancelar") == 0 ) // "Cancelar" option handling
+			{
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+				// Wipe form 
+				unpost_form(form_menu_newgame);
+				free_form(form_menu_newgame);
+				free_field(fields_menu_newgame[0]);
+				free_field(fields_menu_newgame[1]);
+				free_field(fields_menu_newgame[2]);
+				free_field(fields_menu_newgame[3]);
+
+				// Wipe panel
+				del_panel(pan_menu_newgame);
+
+				// Wipe window
+				delwin(win_menu_newgame);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+
+				return 1;
+			}
+			else 		// "Aceptar" option handlig
+			{
+				// End fields filling
+				form_driver(form_menu_newgame, REQ_NEXT_FIELD); 
+				
+				// Get values from fields
+				int value1 = atoi(field_buffer(fields_menu_newgame[0], 0));
+				int value2 = atoi(field_buffer(fields_menu_newgame[1], 0));
+				int value3 = atoi(field_buffer(fields_menu_newgame[2], 0));
+
+				// Validate
+				if( (value1 > 0 && value1 < 31) && (value2 > 2 && value2 < 9) && (value3 > 2 && value3 < 9) )
+				{
+					// TODO: new_game no implemented yet
+					//new_game(value1, value2, value3);
+				} 
+			}
+		}
+		else  // Filling fields
+		{
+			form_driver(form_menu_newgame, c);
+		}
+	}
+
+
+	unpost_form(form_menu_newgame);
+	hide_panel(pan_menu_newgame);
+	update_panels();
+	doupdate();
+	wrefresh(win_menu_newgame);
+	delwin(win_menu_newgame);
+	wrefresh(WIN_BOARD);
+	refresh();
+	touchwin(WIN_BOARD);
+	return 1;
+}
 
 
 
@@ -543,6 +739,7 @@ void init_interface(void)
 	init_pair(5, COLOR_YELLOW, COLOR_BLACK); //Energy level medium
 	init_pair(6, COLOR_MAGENTA, COLOR_BLACK); //Log
 	init_pair(7, COLOR_BLACK, COLOR_WHITE);
+	init_pair(8, COLOR_WHITE, COLOR_BLUE); //Forms title
 
 	refresh();
 
@@ -635,6 +832,7 @@ int main(void)
 	put_object( 4, 2, 'b');
 	put_object( 3, 6, 'e');
 	put_object( 1, 3, 's');
+
 
 
 	int c=0;
