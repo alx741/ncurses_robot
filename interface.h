@@ -70,10 +70,10 @@ void init_interface(void);
 int put_object(int x, int y, char obj);
 
 
-/* Moves robot to X, Y pointing to DIR direction <u,d,r,l>
+/* Draws robot on X, Y pointing to DIR direction <u,d,r,l>
  * returns 1 if succes
  */
-int move_robot(int x, int y, char dir);
+int put_robot(int x, int y, char dir);
 
 
 /* Writes STRING on log window

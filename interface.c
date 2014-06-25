@@ -1,9 +1,32 @@
+/*
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+				File: interface.c
+
+*/
+
+#include "interface.h"
+
+#include <string.h>
+#include <stdlib.h>
+
 #include <ncurses.h>
 #include <menu.h>
 #include <form.h>
 #include <panel.h>
-#include <string.h>
-#include <stdlib.h>
+
+
 
 /* Global window pointers */
 WINDOW* WIN_BOARD=0;
@@ -12,6 +35,9 @@ WINDOW* WIN_HELP=0;
 WINDOW* WIN_LOG=0;
 WINDOW* WIN_MENU=0;
 MENU* MEN_MENU=0;
+
+
+
 
 /* ################################################ */
 /*                     BOARD                        */
@@ -149,10 +175,10 @@ int put_object(int x, int y, char obj)
 }
 
 
-/* Moves robot to X, Y pointing to DIR direction <u,d,r,l>
+/* Draws robot on X, Y pointing to DIR direction <u,d,r,l>
  * returns 1 if succes
  */
-int move_robot(int x, int y, char dir)
+int put_robot(int x, int y, char dir)
 {
 	static int actual_x=0;
 	static int actual_y=0;
@@ -433,7 +459,7 @@ void menu_handler(char* option)
 	}
 	else if( strcmp(option, "Saltar")==0 )
 	{
-		mvprintw(0,0,option);
+		get_jump_form();
 	}
 	else if( strcmp(option, "Teletransportar")==0 )
 	{
@@ -575,7 +601,6 @@ int get_newgame_form()
 	for(i=0;i<n_options;i++)
 	{
 		items[i] = new_item(options[i], "");
-		set_item_userptr(items[i], menu_handler);
 	}
 
 	MENU* menu = new_menu((ITEM**)items);
@@ -675,7 +700,7 @@ int get_newgame_form()
 			else 		// "Aceptar" option handlig
 			{
 				// End fields filling
-				form_driver(form_menu_newgame, REQ_NEXT_FIELD); 
+				form_driver(form_menu_newgame, REQ_VALIDATION); 
 				
 				// Get values from fields
 				int value1 = atoi(field_buffer(fields_menu_newgame[0], 0));
@@ -685,8 +710,41 @@ int get_newgame_form()
 				// Validate
 				if( (value1 > 0 && value1 < 31) && (value2 > 2 && value2 < 9) && (value3 > 2 && value3 < 9) )
 				{
+
+					/*    //  Wipe form and return  \\ */
+
+					// Wipe menu
+					unpost_menu(menu);
+					for(i=0; i<n_options; i++)
+					{
+						free_item(items[i]);
+					}
+					free_menu(menu);
+
+					// Wipe form 
+					unpost_form(form_menu_newgame);
+					free_form(form_menu_newgame);
+					free_field(fields_menu_newgame[0]);
+					free_field(fields_menu_newgame[1]);
+					free_field(fields_menu_newgame[2]);
+					free_field(fields_menu_newgame[3]);
+
+					// Wipe panel
+					del_panel(pan_menu_newgame);
+
+					// Wipe window
+					delwin(win_menu_newgame);
+
+					// Refresh 
+					wrefresh(WIN_BOARD);
+					refresh();
+					touchwin(WIN_BOARD);
+					
+					
 					// TODO: new_game no implemented yet
 					//new_game(value1, value2, value3);
+
+					return 1;
 				} 
 			}
 		}
@@ -694,29 +752,200 @@ int get_newgame_form()
 		{
 			form_driver(form_menu_newgame, c);
 		}
-	}
-
-
-	unpost_form(form_menu_newgame);
-	hide_panel(pan_menu_newgame);
-	update_panels();
-	doupdate();
-	wrefresh(win_menu_newgame);
-	delwin(win_menu_newgame);
-	wrefresh(WIN_BOARD);
-	refresh();
-	touchwin(WIN_BOARD);
-	return 1;
+	} 
 }
 
 
 
+/* Create -jump- panel form
+ * at center of the screen
+ *
+ * returns 1 if susses
+ */
+int get_jump_form()
+{
+	int win_menu_jump_height = 8;
+	int win_menu_jump_width = 40;
+	int win_menu_jump_y =  5;
+	int win_menu_jump_x = (COLS-40)/2;
+
+	WINDOW* win_menu_jump = newwin(win_menu_jump_height, win_menu_jump_width, win_menu_jump_y, win_menu_jump_x);
+	keypad(win_menu_jump, TRUE);
+	PANEL* pan_menu_jump = new_panel(win_menu_jump);
 
 
 
+	/*   -----  CREATE FORM ----- */
+	// Fields config
+	FIELD* fields_menu_jump[2];
+	fields_menu_jump[0] = new_field(1,10,1,1,0,0);
+	fields_menu_jump[1] = NULL;
+
+	set_field_back(fields_menu_jump[0], A_UNDERLINE);
+	field_opts_on(fields_menu_jump[0], O_EDIT);
+	field_opts_off(fields_menu_jump[0], O_AUTOSKIP);
+	set_field_type(fields_menu_jump[0], TYPE_INTEGER, 0, 1, 7); // Validate: Number, 1-7
+
+
+	// Create FORM
+	FORM* form_menu_jump = new_form(fields_menu_jump);
+	set_form_win(form_menu_jump, win_menu_jump);
+	set_form_sub(form_menu_jump, derwin(win_menu_jump, 4, 15, 1, 24));
 
 
 
+	/*   -----  CREATE MENU ----- */ 
+
+	char* options[] = { 
+				"Aceptar",
+				"Cancelar",
+				(char*) NULL,
+			};
+	int n_options = sizeof(options) / sizeof(options[0]);
+	int i;
+
+	ITEM** items = (ITEM**)calloc(n_options, sizeof(ITEM*));
+
+	for(i=0;i<n_options;i++)
+	{
+		items[i] = new_item(options[i], "");
+	}
+
+	MENU* menu = new_menu((ITEM**)items);
+
+	set_menu_win(menu, win_menu_jump);
+	set_menu_sub(menu, derwin(win_menu_jump, 1, 30, 4, 8));
+	set_menu_format(menu, 1, 2);
+	set_menu_mark(menu, " ");
+
+	
+	
+	/*   -----  DRAW ----- */ 
+	
+	// Frame
+	wattron(win_menu_jump, COLOR_PAIR(8) | A_BOLD);
+	box(win_menu_jump, 0, 0);
+	mvwprintw(win_menu_jump, 0, 8, " Saltar ");
+	wattroff(win_menu_jump, COLOR_PAIR(8) | A_BOLD);
+
+	// Field labels
+	mvwprintw(win_menu_jump, 2, 2, "Pasos <1-7> : ");
+
+	// Post form, menu
+	post_form(form_menu_jump);
+	post_menu(menu); 
+	update_panels();
+	doupdate();
+	wrefresh(win_menu_jump);
+
+
+
+	/*   -----  HANDLE ----- */ 
+
+	int c;
+
+	while(1)
+	{
+		c = wgetch(win_menu_jump);
+
+		if( c == KEY_LEFT )
+		{
+			menu_driver(menu, REQ_LEFT_ITEM);
+		}
+		else if( c == KEY_RIGHT )
+		{
+			menu_driver(menu, REQ_RIGHT_ITEM);
+		}
+		else if( c == 127 ) // Back Space
+		{
+			form_driver(form_menu_jump, REQ_CLR_FIELD);
+		}
+		else if( c == 10 ) // Enter
+		{
+			if( strcmp( item_name(current_item(menu)), "Cancelar") == 0 ) // "Cancelar" option handling
+			{
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+				// Wipe form 
+				unpost_form(form_menu_jump);
+				free_form(form_menu_jump);
+				free_field(fields_menu_jump[0]);
+				free_field(fields_menu_jump[1]);
+
+				// Wipe panel
+				del_panel(pan_menu_jump);
+
+				// Wipe window
+				delwin(win_menu_jump);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+
+				return 1;
+			}
+			else 		// "Aceptar" option handlig
+			{
+				// End fields filling
+				form_driver(form_menu_jump, REQ_VALIDATION); 
+				
+				// Get values from fields
+				int value1 = atoi(field_buffer(fields_menu_jump[0], 0));
+
+				// Validate
+				if( (value1 > 0 && value1 < 8) )
+				{
+
+					/*    //  Wipe form and return  \\ */
+
+					// Wipe menu
+					unpost_menu(menu);
+					for(i=0; i<n_options; i++)
+					{
+						free_item(items[i]);
+					}
+					free_menu(menu);
+
+					// Wipe form 
+					unpost_form(form_menu_jump);
+					free_form(form_menu_jump);
+					free_field(fields_menu_jump[0]);
+					free_field(fields_menu_jump[1]);
+
+					// Wipe panel
+					del_panel(pan_menu_jump);
+
+					// Wipe window
+					delwin(win_menu_jump);
+
+					// Refresh 
+					wrefresh(WIN_BOARD);
+					refresh();
+					touchwin(WIN_BOARD);
+					
+					
+					// TODO: jump no implemented yet
+					//jump(value1);
+
+					return 1;
+				} 
+			}
+		}
+		else  // Filling fields
+		{
+			form_driver(form_menu_jump, c);
+		}
+	} 
+}
 
 
 
@@ -726,12 +955,16 @@ int get_newgame_form()
  */
 void init_interface(void)
 {
+	// Curses init
 	initscr();
 	cbreak();
 	keypad(stdscr, TRUE);
 	noecho();
 	start_color();
+	refresh();
 
+
+	// Color pairs
 	init_pair(1, COLOR_RED, COLOR_BLACK); //Barriers, Energy level bad
 	init_pair(2, COLOR_GREEN, COLOR_BLACK); //Stations, Energy level good
 	init_pair(3, COLOR_BLACK, COLOR_GREEN); //Exit
@@ -741,74 +974,17 @@ void init_interface(void)
 	init_pair(7, COLOR_BLACK, COLOR_WHITE);
 	init_pair(8, COLOR_WHITE, COLOR_BLUE); //Forms title
 
-	refresh();
 
-
+	// Windows init
 	get_board_win((COLS-49)/2, 3);
 	get_info_win((COLS-40)/2, LINES-7);
-	put_info(40,'b', 5, 7, 'l');
+	//put_info(40,'b', 5, 7, 'l');
 	get_help_win();
-	get_log_win((COLS-30)-5, 3);
-
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("hola1");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-	put_log("jajaja");
-
-
-
+	get_log_win((COLS-30)-5, 3); 
 	get_menu_win(5, (LINES-15)/2);
+
+	// Refresh
+	refresh();
 }
 
 	
