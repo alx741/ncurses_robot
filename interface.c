@@ -143,7 +143,7 @@ int convert_coordinate(int* x, int* y)
  *
  * return 1 if succes
  */
-int put_object(int x, int y, char obj)
+int draw_object(int x, int y, char obj)
 {
 	if( !convert_coordinate(&x, &y) ){ return 0; }
 	if( WIN_BOARD == 0 ){ return 0; }
@@ -178,7 +178,7 @@ int put_object(int x, int y, char obj)
 /* Draws robot on X, Y pointing to DIR direction <u,d,r,l>
  * returns 1 if succes
  */
-int put_robot(int x, int y, char dir)
+int draw_robot(int x, int y, char dir)
 {
 	static int actual_x=0;
 	static int actual_y=0;
@@ -318,7 +318,7 @@ int get_log_win(int x, int y)
  *
  * Returns 1 if susses
  */
-int put_log(char* string)
+int draw_log(char* string)
 {
 
 	if( WIN_LOG == 0 ){ return 0; }
@@ -390,7 +390,7 @@ int get_info_win(int x, int y)
  *
  * Returns 1 if susses
  */
-int put_info(int energy,char e_lvl, int x, int y, char dir)
+int draw_info(int energy,char e_lvl, int x, int y, char dir)
 {
 
 	if( WIN_INFO == 0 ){ return 0; }
@@ -978,7 +978,7 @@ void init_interface(void)
 	// Windows init
 	get_board_win((COLS-49)/2, 3);
 	get_info_win((COLS-40)/2, LINES-7);
-	//put_info(40,'b', 5, 7, 'l');
+	//draw_info(40,'b', 5, 7, 'l');
 	get_help_win();
 	get_log_win((COLS-30)-5, 3); 
 	get_menu_win(5, (LINES-15)/2);
@@ -1005,9 +1005,9 @@ int main(void)
 	getch();
 	move_robot(5,5,'d');
 	getch();
-	put_object( 4, 2, 'b');
-	put_object( 3, 6, 'e');
-	put_object( 1, 3, 's');
+	draw_object( 4, 2, 'b');
+	draw_object( 3, 6, 'e');
+	draw_object( 1, 3, 's');
 
 
 

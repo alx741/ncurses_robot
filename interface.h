@@ -56,6 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 /* Get user interface */
 void init_interface(void);
@@ -67,20 +69,20 @@ void init_interface(void);
  *
  * return 1 if succes
  */
-int put_object(int x, int y, char obj);
+int draw_object(int x, int y, char obj);
 
 
 /* Draws robot on X, Y pointing to DIR direction <u,d,r,l>
  * returns 1 if succes
  */
-int put_robot(int x, int y, char dir);
+int draw_robot(int x, int y, char dir);
 
 
 /* Writes STRING on log window
  *
  * Returns 1 if susses
  */
-int put_log(char* string);
+int draw_log(char* string);
 
 
 /* Writes info on information window
@@ -90,4 +92,6 @@ int put_log(char* string);
  *
  * Returns 1 if susses
  */
-int put_info(int energy,char e_lvl, int x, int y, char dir);
+int draw_info(int energy,char e_lvl, int x, int y, char dir);
+
+#endif
