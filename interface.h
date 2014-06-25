@@ -94,4 +94,10 @@ int draw_log(char* string);
  */
 int draw_info(int energy,char e_lvl, int x, int y, char dir);
 
+
+/* Remove All objects in board
+ * returns 1 if succes
+ */
+int blank_board();
+
 #endif

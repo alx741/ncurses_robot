@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "interface.h"
+#include "game.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -242,6 +243,32 @@ int draw_robot(int x, int y, char dir)
 }
 
 
+/* Remove All objects in board
+ * returns 1 if succes
+ */
+int blank_board()
+{
+	int x_char;
+	int y_char;
+
+	int i,j;
+
+	for(i=0;i<8;i++)
+	{
+		for(j=0;j<8;j++)
+		{
+			x_char = i;
+			y_char = j;
+			convert_coordinate(&x_char, &y_char);
+
+			mvwaddstr(WIN_BOARD, y_char, x_char, "     ");
+			mvwaddstr(WIN_BOARD, (y_char+1), x_char, "     ");
+		}
+	}
+}
+
+
+
 /* ################################################ */
 /*                     HELP                         */
 /* ################################################ */
@@ -405,7 +432,7 @@ int draw_info(int energy,char e_lvl, int x, int y, char dir)
 		color_index = 1;
 
 	wattron(WIN_INFO, COLOR_PAIR(color_index));
-	mvwprintw(WIN_INFO, 2, 9, "%d [kb]", energy);
+	mvwprintw(WIN_INFO, 2, 9, "%d [kb]  ", energy);
 	wattroff(WIN_INFO, COLOR_PAIR(color_index));
 
 	mvwprintw(WIN_INFO, 4, 12, "X:%d / Y:%d", x, y);
@@ -415,24 +442,36 @@ int draw_info(int energy,char e_lvl, int x, int y, char dir)
 		wattron(WIN_INFO, A_REVERSE);
 		mvwaddch(WIN_INFO, 2, 32, ACS_UARROW);
 		wattroff(WIN_INFO, A_REVERSE);
+		mvwaddch(WIN_INFO, 3, 30, ACS_LARROW);
+		mvwaddch(WIN_INFO, 3, 34, ACS_RARROW);
+		mvwaddch(WIN_INFO, 4, 32, ACS_DARROW);
 	}
 	else if( dir == 'd' )
 	{
 		wattron(WIN_INFO, A_REVERSE);
 		mvwaddch(WIN_INFO, 4, 32, ACS_DARROW);
 		wattroff(WIN_INFO, A_REVERSE);
+		mvwaddch(WIN_INFO, 3, 30, ACS_LARROW);
+		mvwaddch(WIN_INFO, 3, 34, ACS_RARROW);
+		mvwaddch(WIN_INFO, 2, 32, ACS_UARROW);
 	}
 	else if( dir == 'l' )
 	{
 		wattron(WIN_INFO, A_REVERSE);
 		mvwaddch(WIN_INFO, 3, 30, ACS_LARROW);
 		wattroff(WIN_INFO, A_REVERSE);
+		mvwaddch(WIN_INFO, 3, 34, ACS_RARROW);
+		mvwaddch(WIN_INFO, 2, 32, ACS_UARROW);
+		mvwaddch(WIN_INFO, 4, 32, ACS_DARROW);
 	}
 	else if( dir == 'r' )
 	{
 		wattron(WIN_INFO, A_REVERSE);
 		mvwaddch(WIN_INFO, 3, 34, ACS_RARROW);
 		wattroff(WIN_INFO, A_REVERSE);
+		mvwaddch(WIN_INFO, 3, 30, ACS_LARROW);
+		mvwaddch(WIN_INFO, 2, 32, ACS_UARROW);
+		mvwaddch(WIN_INFO, 4, 32, ACS_DARROW);
 	}
 
 	wrefresh(WIN_INFO);
@@ -742,7 +781,7 @@ int get_newgame_form()
 					
 					
 					// TODO: new_game no implemented yet
-					//new_game(value1, value2, value3);
+					new_game(value1, value2, value3);
 
 					return 1;
 				} 
@@ -999,18 +1038,6 @@ int main(void)
 	init_interface();
 
 
-	move_robot(0,0,'r');
-	getch();
-	move_robot(1,2,'u');
-	getch();
-	move_robot(5,5,'d');
-	getch();
-	draw_object( 4, 2, 'b');
-	draw_object( 3, 6, 'e');
-	draw_object( 1, 3, 's');
-
-
-
 	int c=0;
 	while( (c = getch()) != KEY_F(1))
 	{
@@ -1022,6 +1049,14 @@ int main(void)
 		{
 			menu_driver(MEN_MENU, REQ_UP_ITEM);
 		}
+		if( c == KEY_LEFT )
+		{
+			rotate_robot('l');
+		}
+		if( c == KEY_RIGHT )
+		{
+			rotate_robot('r');
+		}
 		if( c == 10 ) // ENTER
 		{
 			ITEM* cur;
@@ -1032,10 +1067,11 @@ int main(void)
 			p( (char*) item_name(cur) );
 
 		}
-		if( c == KEY_LEFT )
+		if( c == 32 ) // SPACE BAR
 		{
-			move_robot(6,6,'l');
+			move_robot();
 		}
+
 		wrefresh(WIN_MENU);
 		wrefresh(WIN_BOARD);
 	}
