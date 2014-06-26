@@ -502,7 +502,7 @@ void menu_handler(char* option)
 	}
 	else if( strcmp(option, "Teletransportar")==0 )
 	{
-		mvprintw(0,0,option);
+		get_teleport_form();
 	}
 	else if( strcmp(option, "Ir al origen")==0 )
 	{
@@ -989,6 +989,147 @@ int get_jump_form()
 }
 
 
+/* Create -teleport- panel form
+ * at center of the screen
+ *
+ * returns 1 if susses
+ */
+int get_teleport_form()
+{
+	int win_menu_teleport_height = 8;
+	int win_menu_teleport_width = 40;
+	int win_menu_teleport_y =  5;
+	int win_menu_teleport_x = (COLS-40)/2;
+
+	WINDOW* win_menu_teleport = newwin(win_menu_teleport_height, win_menu_teleport_width, win_menu_teleport_y, win_menu_teleport_x);
+	keypad(win_menu_teleport, TRUE);
+	PANEL* pan_menu_teleport = new_panel(win_menu_teleport);
+
+
+	/*   -----  CREATE MENU ----- */ 
+
+	char* options[] = { 
+				"Aceptar",
+				"Cancelar",
+				(char*) NULL,
+			};
+	int n_options = sizeof(options) / sizeof(options[0]);
+	int i;
+
+	ITEM** items = (ITEM**)calloc(n_options, sizeof(ITEM*));
+
+	for(i=0;i<n_options;i++)
+	{
+		items[i] = new_item(options[i], "");
+	}
+
+	MENU* menu = new_menu((ITEM**)items);
+
+	set_menu_win(menu, win_menu_teleport);
+	set_menu_sub(menu, derwin(win_menu_teleport, 1, 30, 4, 8));
+	set_menu_format(menu, 1, 2);
+	set_menu_mark(menu, " ");
+
+	
+	
+	/*   -----  DRAW ----- */ 
+	
+	// Frame
+	wattron(win_menu_teleport, COLOR_PAIR(8) | A_BOLD);
+	box(win_menu_teleport, 0, 0);
+	mvwprintw(win_menu_teleport, 0, 5, " Teletrasnportar ");
+	wattroff(win_menu_teleport, COLOR_PAIR(8) | A_BOLD);
+
+	// Post form, menu
+	post_menu(menu); 
+	update_panels();
+	doupdate();
+	wrefresh(win_menu_teleport);
+
+
+
+	/*   -----  HANDLE ----- */ 
+
+	int c;
+
+	while(1)
+	{
+		c = wgetch(win_menu_teleport);
+
+		if( c == KEY_LEFT )
+		{
+			menu_driver(menu, REQ_LEFT_ITEM);
+		}
+		else if( c == KEY_RIGHT )
+		{
+			menu_driver(menu, REQ_RIGHT_ITEM);
+		}
+		else if( c == 10 ) // Enter
+		{
+			if( strcmp( item_name(current_item(menu)), "Cancelar") == 0 ) // "Cancelar" option handling
+			{
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+
+				// Wipe panel
+				del_panel(pan_menu_teleport);
+
+				// Wipe window
+				delwin(win_menu_teleport);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+
+				return 1;
+			}
+			else 		// "Aceptar" option handlig
+			{
+				
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+
+				// Wipe panel
+				del_panel(pan_menu_teleport);
+
+				// Wipe window
+				delwin(win_menu_teleport);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+				
+				teleport_robot();
+				
+				return 1;
+				 
+			}
+		}
+	} 
+}
+
+
+/* ########################################### */
+/* 				INTERFACE INIT 				   */
+/* ########################################### */
 
 /* Curses init
  * color pairs declarations

@@ -47,7 +47,7 @@ int ENERGY; // Robot energy
 int ENERGY_STAT; // Robot energy level status (good, medium, bad)
 int X, Y; // Robot position
 char DIRECTION; // Robot direction
-
+static int is_station_below=0; // When Robot is above a station
 
 /* Empty BOARD boxes */
 void init_board()
@@ -226,8 +226,7 @@ void rotate_robot(char dir)
  */
 int move_robot()
 {
-	static int is_station_below=0;
-
+	
 	// UP step
 	if( DIRECTION == UP && Y<7 )
 	{
@@ -601,4 +600,131 @@ int move_robot()
 
 
 	
+/* Interchange robot coordinates
+ *
+ * If possible return 1, else return 0
+ *
+ * LOGS the movement
+ * Charge robot energy when arrives a charge station
+ * Invokes WIN and NEW GAME routines whe robot arrive the exit
+ */
+int teleport_robot()
+{
+	int new_x, new_y; 
+
+	// Interchange coordinates
+	new_x = Y;
+	new_y = X;
+
+
+	if( BOARD[new_x][new_y] == BARRIER )
+	{
+		draw_log("[!] Imposible [!]");
+		return 0;
+	}
+	
+	// Charge station found
+	else if( BOARD[new_x][new_y] == STATION )
+	{
+		draw_log("[!] Imposible [!]");
+		return 0;
+	}
+	// Exit found
+	else if( BOARD[new_x][new_y] == EXIT )
+	{
+		draw_log("[!] Imposible [!]");
+		return 0;
+	}
+	// Empty box found
+	else if( BOARD[new_x][new_y] == EMPTY )
+	{
+		draw_robot(new_x, new_y, DIRECTION);
+		BOARD[X][Y] = EMPTY;
+		if( is_station_below )
+		{
+			BOARD[X][Y] = STATION;
+			draw_object(X, Y, 's');
+			is_station_below=0;
+		}
+		X = new_x;
+		Y = new_y;
+		if( DIRECTION == UP)
+		{
+			BOARD[X][Y] = UROBOT;
+		}
+		else if( DIRECTION == DOWN)
+		{
+			BOARD[X][Y] = DROBOT;
+		}
+		else if( DIRECTION == RIGHT)
+		{
+			BOARD[X][Y] = RROBOT;
+		}
+		else if( DIRECTION == LEFT)
+		{
+			BOARD[X][Y] = LROBOT;
+		}
+		ENERGY--;
+		if(ENERGY>=INIT_ENERGY)
+		{
+			ENERGY_STAT = GOOD;
+		}
+		else if(ENERGY>=(INIT_ENERGY)/2)
+		{
+			ENERGY_STAT = MEDIUM;
+		}
+		else if( ENERGY > 0 )
+		{
+			ENERGY_STAT = BAD;
+		}
+		else
+		{
+			draw_log("--Teletransportar");
+			//TODO: LOST ROUTINE
+			return 1;
+		}
+
+		draw_info(ENERGY,ENERGY_STAT, X, Y, DIRECTION);
+		draw_log("--Teletransportar");
+		return 1;
+	}
+}
+
+/* Puts robot in (0,0)
+ *
+ *
+ * LOGS the movement
+ */
+int move_robot_origin()
+{
+	draw_info(ENERGY,ENERGY_STAT, 0, 0, DIRECTION);
+	draw_log("--Ir al origen");
+
+	draw_robot(0, 0, DIRECTION);
+	BOARD[X][Y] = EMPTY;
+	if( is_station_below )
+	{
+		BOARD[X][Y] = STATION;
+		draw_object(X, Y, 's');
+		is_station_below=0;
+	}
+	X=0;
+	Y=0;
+	if( DIRECTION == UP)
+	{
+		BOARD[X][Y] = UROBOT;
+	}
+	else if( DIRECTION == DOWN)
+	{
+		BOARD[X][Y] = DROBOT;
+	}
+	else if( DIRECTION == RIGHT)
+	{
+		BOARD[X][Y] = RROBOT;
+	}
+	else if( DIRECTION == LEFT)
+	{
+		BOARD[X][Y] = LROBOT;
+	}
+}
 

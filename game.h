@@ -53,4 +53,23 @@ int move_robot();
 void rotate_robot(char dir);
 
 
+/* Interchange robot coordinates
+ *
+ * If possible return 1, else return 0
+ *
+ * LOGS the movement
+ * Charge robot energy when arrives a charge station
+ * Invokes WIN and NEW GAME routines whe robot arrive the exit
+ */
+int teleport_robot();
+
+
+/* Puts robot in (0,0)
+ *
+ *
+ * LOGS the movement
+ */
+int move_robot_origin();
+
+
 #endif
