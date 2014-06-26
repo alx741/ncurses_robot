@@ -1278,6 +1278,116 @@ int get_origin_form()
 
 
 
+/* ################################################ */
+/*                  POP-UP INFO                     */
+/* ################################################ */
+
+/* Create -WIN- pop-up window
+ * at center of the screen
+ * wait for user any key and then return
+ */
+void get_winpopup()
+{
+	int win_winpopup_height = 12;
+	int win_winpopup_width = 40;
+	int win_winpopup_y =  5;
+	int win_winpopup_x = (COLS-40)/2;
+
+	WINDOW* win_winpopup = newwin(win_winpopup_height, win_winpopup_width, win_winpopup_y, win_winpopup_x);
+	PANEL* pan_winpopup = new_panel(win_winpopup);
+
+
+
+	/*   -----  DRAW ----- */ 
+	
+	wattron(win_winpopup, COLOR_PAIR(8) | A_BOLD);
+	box(win_winpopup, 0, 0);
+	wattroff(win_winpopup, COLOR_PAIR(8) | A_BOLD);
+
+
+	wattron(win_winpopup, COLOR_PAIR(2));
+	mvwprintw(win_winpopup,3,6, " _____     _ _        _ _ ");
+	mvwaddstr(win_winpopup,4,6, "|  ___|   (_) |      | | |");
+	mvwaddstr(win_winpopup,5,6, "| |____  ___| |_ ___ | | |");
+	mvwaddstr(win_winpopup,6,6, "|  __\\ \\/ / | __/ _ \\| | |");
+	mvwaddstr(win_winpopup,7,6, "| |___>  <| | || (_) |_|_|");
+	mvwaddstr(win_winpopup,8,6, "\\____/_/\\_\\_|\\__\\___/(_|_)");
+	wattroff(win_winpopup, COLOR_PAIR(2));
+			 
+			 
+	update_panels();
+	doupdate();
+	wrefresh(win_winpopup);
+
+	getch();
+
+	// Wipe panel
+	del_panel(pan_winpopup);
+	// Wipe window
+	delwin(win_winpopup); 
+	// Refresh 
+	wrefresh(WIN_BOARD);
+	refresh();
+	touchwin(WIN_BOARD);
+	
+}
+
+
+
+/* Create -LOSE- pop-up window
+ * at center of the screen
+ * wait for user any key and then return
+ */
+void get_losepopup()
+{
+	int win_losepopup_height = 13;
+	int win_losepopup_width = 40;
+	int win_losepopup_y =  5;
+	int win_losepopup_x = (COLS-40)/2;
+
+	WINDOW* win_losepopup = newwin(win_losepopup_height, win_losepopup_width, win_losepopup_y, win_losepopup_x);
+	PANEL* pan_losepopup = new_panel(win_losepopup);
+
+
+
+	/*   -----  DRAW ----- */ 
+	
+	wattron(win_losepopup, COLOR_PAIR(8) | A_BOLD);
+	box(win_losepopup, 0, 0);
+	wattroff(win_losepopup, COLOR_PAIR(8) | A_BOLD);
+
+
+	wattron(win_losepopup, COLOR_PAIR(1));
+	mvwprintw(win_losepopup,2,5, "          .-******-.");
+	mvwaddstr(win_losepopup,3,5, "        .'          '.");
+	mvwaddstr(win_losepopup,4,5, "       /   O      O   \\");
+	mvwaddstr(win_losepopup,5,5, "      :           `    :");
+	mvwaddstr(win_losepopup,6,5, "      |                |");
+	mvwaddstr(win_losepopup,7,5, "      :    .------.    :");
+	mvwaddstr(win_losepopup,8,5, "       \\  '        '  /");
+	mvwaddstr(win_losepopup,9,5, "        '.          .'");
+	mvwaddstr(win_losepopup,10,5, "          '-......-'");
+	wattroff(win_losepopup, COLOR_PAIR(1));
+			 
+			 
+	update_panels();
+	doupdate();
+	wrefresh(win_losepopup);
+
+	getch();
+
+	// Wipe panel
+	del_panel(pan_losepopup);
+	// Wipe window
+	delwin(win_losepopup); 
+	// Refresh 
+	wrefresh(WIN_BOARD);
+	refresh();
+	touchwin(WIN_BOARD);
+	
+}
+
+
 
 
 

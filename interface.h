@@ -100,4 +100,18 @@ int draw_info(int energy,char e_lvl, int x, int y, char dir);
  */
 int blank_board();
 
+
+/* Create -WIN- pop-up window
+ * at center of the screen
+ */
+void get_winpopup();
+
+
+/* Create -LOSE- pop-up window
+ * at center of the screen
+ * wait for user any key and then return
+ */
+void get_losepopup();
+
+
 #endif
