@@ -971,10 +971,12 @@ int get_jump_form()
 					refresh();
 					touchwin(WIN_BOARD);
 					
+					int i=0;
+					for(i=0;i<value1;i++)
+					{	
+						move_robot();
+					}
 					
-					// TODO: jump no implemented yet
-					//jump(value1);
-
 					return 1;
 				} 
 			}
