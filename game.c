@@ -156,7 +156,7 @@ void rotate_robot(char dir)
 {
 	if( dir == RIGHT )
 	{
-		draw_log("--Girar Derecha");
+		draw_log("--Girar Derecha         ");
 		if( DIRECTION == UP )
 		{
 			draw_robot(X, Y, RIGHT);
@@ -184,7 +184,7 @@ void rotate_robot(char dir)
 	}
 	else if( dir == LEFT )
 	{
-		draw_log("--Girar Izquierda");
+		draw_log("--Girar Izquierda        ");
 		if( DIRECTION == UP )
 		{
 			draw_robot(X, Y, LEFT);
@@ -250,7 +250,7 @@ int move_robot()
 			Y++;
 			BOARD[X][Y] = UROBOT;
 			ENERGY+=ENERGY_STATIONS;
-			draw_log("-| Cargando |-");
+			draw_log("-| Cargando |-        ");
 			if(ENERGY>=INIT_ENERGY)
 			{
 				ENERGY_STAT = GOOD;
@@ -266,13 +266,13 @@ int move_robot()
 
 			is_station_below=1;
 			draw_info(ENERGY,ENERGY_STAT, X, Y, UP);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 		// Exit found
 		else if( BOARD[X][Y+1] == EXIT )
 		{
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
 			//TODO:  WIN ROUTINE
 			return 1;
@@ -305,13 +305,13 @@ int move_robot()
 			}
 			else
 			{
-				draw_log("--Avanzar");
+				draw_log("--Avanzar        ");
 				//TODO: LOST ROUTINE
 				return 1;
 			}
 
 			draw_info(ENERGY,ENERGY_STAT, X, Y, UP);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 
@@ -343,7 +343,7 @@ int move_robot()
 			Y--;
 			BOARD[X][Y] = DROBOT;
 			ENERGY+=ENERGY_STATIONS;
-			draw_log("-| Cargando |-");
+			draw_log("-| Cargando |-        ");
 			if(ENERGY>=INIT_ENERGY)
 			{
 				ENERGY_STAT = GOOD;
@@ -359,13 +359,13 @@ int move_robot()
 
 			is_station_below=1;
 			draw_info(ENERGY,ENERGY_STAT, X, Y, DOWN);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 		// Exit found
 		else if( BOARD[X][Y-1] == EXIT )
 		{
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
 			//TODO:  WIN ROUTINE
 			return 1;
@@ -398,13 +398,13 @@ int move_robot()
 			}
 			else
 			{
-				draw_log("--Avanzar");
+				draw_log("--Avanzar        ");
 				//TODO: LOST ROUTINE
 				return 1;
 			}
 
 			draw_info(ENERGY,ENERGY_STAT, X, Y, DOWN);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 
@@ -436,7 +436,7 @@ int move_robot()
 			X++;
 			BOARD[X][Y] = RROBOT;
 			ENERGY+=ENERGY_STATIONS;
-			draw_log("-| Cargando |-");
+			draw_log("-| Cargando |-        ");
 			if(ENERGY>=INIT_ENERGY)
 			{
 				ENERGY_STAT = GOOD;
@@ -452,13 +452,13 @@ int move_robot()
 
 			is_station_below=1;
 			draw_info(ENERGY,ENERGY_STAT, X, Y, RIGHT);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 		// Exit found
 		else if( BOARD[X+1][Y] == EXIT )
 		{
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
 			//TODO:  WIN ROUTINE
 			return 1;
@@ -491,13 +491,13 @@ int move_robot()
 			}
 			else
 			{
-				draw_log("--Avanzar");
+				draw_log("--Avanzar        ");
 				//TODO: LOST ROUTINE
 				return 1;
 			}
 
 			draw_info(ENERGY,ENERGY_STAT, X, Y, RIGHT);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 
@@ -529,7 +529,7 @@ int move_robot()
 			X--;
 			BOARD[X][Y] = LROBOT;
 			ENERGY+=ENERGY_STATIONS;
-			draw_log("-| Cargando |-");
+			draw_log("-| Cargando |-        ");
 			if(ENERGY>=INIT_ENERGY)
 			{
 				ENERGY_STAT = GOOD;
@@ -545,13 +545,13 @@ int move_robot()
 
 			is_station_below=1;
 			draw_info(ENERGY,ENERGY_STAT, X, Y, LEFT);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 		// Exit found
 		else if( BOARD[X-1][Y] == EXIT )
 		{
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
 			//TODO:  WIN ROUTINE
 			return 1;
@@ -584,13 +584,13 @@ int move_robot()
 			}
 			else
 			{
-				draw_log("--Avanzar");
+				draw_log("--Avanzar        ");
 				//TODO: LOST ROUTINE
 				return 1;
 			}
 
 			draw_info(ENERGY,ENERGY_STAT, X, Y, LEFT);
-			draw_log("--Avanzar");
+			draw_log("--Avanzar        ");
 			return 1;
 		}
 
@@ -619,20 +619,20 @@ int teleport_robot()
 
 	if( BOARD[new_x][new_y] == BARRIER )
 	{
-		draw_log("[!] Imposible [!]");
+		draw_log("[!] Imposible [!]     ");
 		return 0;
 	}
 	
 	// Charge station found
 	else if( BOARD[new_x][new_y] == STATION )
 	{
-		draw_log("[!] Imposible [!]");
+		draw_log("[!] Imposible [!]     ");
 		return 0;
 	}
 	// Exit found
 	else if( BOARD[new_x][new_y] == EXIT )
 	{
-		draw_log("[!] Imposible [!]");
+		draw_log("[!] Imposible [!]     ");
 		return 0;
 	}
 	// Empty box found
@@ -679,13 +679,13 @@ int teleport_robot()
 		}
 		else
 		{
-			draw_log("--Teletransportar");
+			draw_log("--Teletransportar       ");
 			//TODO: LOST ROUTINE
 			return 1;
 		}
 
 		draw_info(ENERGY,ENERGY_STAT, X, Y, DIRECTION);
-		draw_log("--Teletransportar");
+		draw_log("--Teletransportar      ");
 		return 1;
 	}
 }
@@ -698,7 +698,7 @@ int teleport_robot()
 int move_robot_origin()
 {
 	draw_info(ENERGY,ENERGY_STAT, 0, 0, DIRECTION);
-	draw_log("--Ir al origen");
+	draw_log("--Ir al origen      ");
 
 	draw_robot(0, 0, DIRECTION);
 	BOARD[X][Y] = EMPTY;

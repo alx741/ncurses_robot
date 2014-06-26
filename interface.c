@@ -347,18 +347,27 @@ int get_log_win(int x, int y)
  */
 int draw_log(char* string)
 {
+	static int color_log=6;
 
 	if( WIN_LOG == 0 ){ return 0; }
 	
 	static int index=4;
 
 	if( index == (LINES-4)-2 )
+	{
 		index=4;
+		if( color_log == 6 )
+			color_log = 9;
+		else if( color_log == 9 )
+			color_log = 10;
+		else if( color_log == 10 )
+			color_log = 6;
+	}
 
 	
-	wattron(WIN_LOG, COLOR_PAIR(6));
+	wattron(WIN_LOG, COLOR_PAIR(color_log));
 	mvwprintw(WIN_LOG, index, 4, string);
-	wattroff(WIN_LOG, COLOR_PAIR(6));
+	wattroff(WIN_LOG, COLOR_PAIR(color_log));
 
 	wrefresh(WIN_LOG);
 	index++;
@@ -1297,7 +1306,9 @@ void init_interface(void)
 	init_pair(3, COLOR_BLACK, COLOR_GREEN); //Exit
 	init_pair(4, COLOR_CYAN, COLOR_BLACK); //Robot
 	init_pair(5, COLOR_YELLOW, COLOR_BLACK); //Energy level medium
-	init_pair(6, COLOR_MAGENTA, COLOR_BLACK); //Log
+	init_pair(6, COLOR_MAGENTA, COLOR_BLACK); //Log1
+	init_pair(9, COLOR_GREEN, COLOR_BLACK); //Log2
+	init_pair(10, COLOR_YELLOW, COLOR_BLACK); //Log3
 	init_pair(7, COLOR_BLACK, COLOR_WHITE);
 	init_pair(8, COLOR_WHITE, COLOR_BLUE); //Forms title
 
