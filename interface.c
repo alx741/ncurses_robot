@@ -506,7 +506,7 @@ void menu_handler(char* option)
 	}
 	else if( strcmp(option, "Ir al origen")==0 )
 	{
-		mvprintw(0,0,option);
+		get_origin_form();
 	}
 	else if( strcmp(option, "Cargar Instrucciones")==0 )
 	{
@@ -1125,6 +1125,151 @@ int get_teleport_form()
 		}
 	} 
 }
+
+
+
+
+/* Create -origin- panel form
+ * at center of the screen
+ *
+ * returns 1 if susses
+ */
+int get_origin_form()
+{
+	int win_menu_origin_height = 8;
+	int win_menu_origin_width = 40;
+	int win_menu_origin_y =  5;
+	int win_menu_origin_x = (COLS-40)/2;
+
+	WINDOW* win_menu_origin = newwin(win_menu_origin_height, win_menu_origin_width, win_menu_origin_y, win_menu_origin_x);
+	keypad(win_menu_origin, TRUE);
+	PANEL* pan_menu_origin = new_panel(win_menu_origin);
+
+
+	/*   -----  CREATE MENU ----- */ 
+
+	char* options[] = { 
+				"Aceptar",
+				"Cancelar",
+				(char*) NULL,
+			};
+	int n_options = sizeof(options) / sizeof(options[0]);
+	int i;
+
+	ITEM** items = (ITEM**)calloc(n_options, sizeof(ITEM*));
+
+	for(i=0;i<n_options;i++)
+	{
+		items[i] = new_item(options[i], "");
+	}
+
+	MENU* menu = new_menu((ITEM**)items);
+
+	set_menu_win(menu, win_menu_origin);
+	set_menu_sub(menu, derwin(win_menu_origin, 1, 30, 4, 8));
+	set_menu_format(menu, 1, 2);
+	set_menu_mark(menu, " ");
+
+	
+	
+	/*   -----  DRAW ----- */ 
+	
+	// Frame
+	wattron(win_menu_origin, COLOR_PAIR(8) | A_BOLD);
+	box(win_menu_origin, 0, 0);
+	mvwprintw(win_menu_origin, 0, 5, " Ir al origen ");
+	wattroff(win_menu_origin, COLOR_PAIR(8) | A_BOLD);
+
+	// Post form, menu
+	post_menu(menu); 
+	update_panels();
+	doupdate();
+	wrefresh(win_menu_origin);
+
+
+
+	/*   -----  HANDLE ----- */ 
+
+	int c;
+
+	while(1)
+	{
+		c = wgetch(win_menu_origin);
+
+		if( c == KEY_LEFT )
+		{
+			menu_driver(menu, REQ_LEFT_ITEM);
+		}
+		else if( c == KEY_RIGHT )
+		{
+			menu_driver(menu, REQ_RIGHT_ITEM);
+		}
+		else if( c == 10 ) // Enter
+		{
+			if( strcmp( item_name(current_item(menu)), "Cancelar") == 0 ) // "Cancelar" option handling
+			{
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+
+				// Wipe panel
+				del_panel(pan_menu_origin);
+
+				// Wipe window
+				delwin(win_menu_origin);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+
+				return 1;
+			}
+			else 		// "Aceptar" option handlig
+			{
+				
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+
+				// Wipe panel
+				del_panel(pan_menu_origin);
+
+				// Wipe window
+				delwin(win_menu_origin);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+				
+				move_robot_origin();
+				
+				return 1;
+				 
+			}
+		}
+	} 
+}
+
+
+
+
+
 
 
 /* ########################################### */
