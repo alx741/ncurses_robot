@@ -37,6 +37,16 @@ typedef struct queue_t
 }queue_t;
 
 
+/* Returns a QUEUE pointer */
+queue_t* queue_new()
+{
+	queue_t* queue = (queue_t*) malloc(sizeof(queue_t));
+
+	// Init Queue
+	queue.head = NULL;
+	queue.tail = NULL;
+}
+
 
 /* Enqueue VALUE ptr in QUEUE
  *
@@ -45,7 +55,7 @@ typedef struct queue_t
 int enqueue(queue_t* queue, void* value)
 {
 	// Create node
-	node_t* node = (node_t*) malloc(sizeof(node_t));
+	queue_node_t* node = (queue_node_t*) malloc(sizeof(queue_node_t));
 	node -> payload = value;
 
 	if( queue -> tail == NULL ) //Empty queue
@@ -87,21 +97,23 @@ void* dequeue(queue_t* queue)
 
 		if( queue -> tail == queue -> head ) // Single node queue
 		{ 
+			// Free node memory
+			free(queue -> head);
+
 			// Empty queue
 			queue -> tail = NULL;
 			queue -> head = NULL; 
-
-			// Free node memory
-			free(queue -> head);
 
 			return value;
 		}
 		else
 		{ 
-			queue -> head -> previous -> next = NULL;
+			queue -> head = queue -> head -> previous;
 			
-			// Free node memory
-			free(queue -> head);
+			// Free last HEAD memory
+			free(queue -> head -> next);
+
+			queue -> head -> next = NULL;
 
 			return value;
 		}
@@ -123,3 +135,24 @@ int is_queue_empty(queue_t* queue)
 		return 0;
 	}
 }
+
+
+//int main()
+//{
+//	queue_t QUEUE;
+//	QUEUE.tail = NULL;
+//	QUEUE.head = NULL;
+//
+//	void* value = NULL;
+//
+//	enqueue(&QUEUE, value);
+//	enqueue(&QUEUE, value);
+//	enqueue(&QUEUE, value);
+//
+//	dequeue(&QUEUE);
+//	dequeue(&QUEUE);
+//	dequeue(&QUEUE);
+//
+//	return 0;
+//}
+//

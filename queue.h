@@ -19,8 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef QUEUE_H
 #define QUEUE_H
 
+// QUEUE NODES
+typedef struct queue_node_t queue_node_t;
+
 // QUEUE
-typedef struct queue_t;
+typedef struct queue_t queue_t;
+
+
+/* Returns a QUEUE pointer */
+queue_t* queue_new();
 
 
 /* Enqueue VALUE ptr in QUEUE
