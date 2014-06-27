@@ -519,7 +519,7 @@ void menu_handler(char* option)
 	}
 	else if( strcmp(option, "Cargar Instrucciones")==0 )
 	{
-		mvprintw(0,0,option);
+		get_fromfile_form();
 	}
 }
 
@@ -1274,6 +1274,195 @@ int get_origin_form()
 		}
 	} 
 }
+
+
+/* Create -fromfile- panel form
+ * at center of the screen
+ *
+ * returns 1 if susses
+ */
+int get_fromfile_form()
+{
+	int win_menu_fromfile_height = 8;
+	int win_menu_fromfile_width = 40;
+	int win_menu_fromfile_y =  5;
+	int win_menu_fromfile_x = (COLS-40)/2;
+
+	WINDOW* win_menu_fromfile = newwin(win_menu_fromfile_height, win_menu_fromfile_width, win_menu_fromfile_y, win_menu_fromfile_x);
+	keypad(win_menu_fromfile, TRUE);
+	PANEL* pan_menu_fromfile = new_panel(win_menu_fromfile);
+
+
+
+	/*   -----  CREATE FORM ----- */
+	// Fields config
+	FIELD* fields_menu_fromfile[2];
+	fields_menu_fromfile[0] = new_field(1,10,1,1,0,0);
+	fields_menu_fromfile[1] = NULL;
+
+	set_field_back(fields_menu_fromfile[0], A_UNDERLINE);
+	field_opts_on(fields_menu_fromfile[0], O_EDIT);
+	field_opts_off(fields_menu_fromfile[0], O_AUTOSKIP);
+
+
+	// Create FORM
+	FORM* form_menu_fromfile = new_form(fields_menu_fromfile);
+	set_form_win(form_menu_fromfile, win_menu_fromfile);
+	set_form_sub(form_menu_fromfile, derwin(win_menu_fromfile, 4, 15, 1, 24));
+
+
+
+	/*   -----  CREATE MENU ----- */ 
+
+	char* options[] = { 
+				"Aceptar",
+				"Cancelar",
+				(char*) NULL,
+			};
+	int n_options = sizeof(options) / sizeof(options[0]);
+	int i;
+
+	ITEM** items = (ITEM**)calloc(n_options, sizeof(ITEM*));
+
+	for(i=0;i<n_options;i++)
+	{
+		items[i] = new_item(options[i], "");
+	}
+
+	MENU* menu = new_menu((ITEM**)items);
+
+	set_menu_win(menu, win_menu_fromfile);
+	set_menu_sub(menu, derwin(win_menu_fromfile, 1, 30, 4, 8));
+	set_menu_format(menu, 1, 2);
+	set_menu_mark(menu, " ");
+
+	
+	
+	/*   -----  DRAW ----- */ 
+	
+	// Frame
+	wattron(win_menu_fromfile, COLOR_PAIR(8) | A_BOLD);
+	box(win_menu_fromfile, 0, 0);
+	mvwprintw(win_menu_fromfile, 0, 4, " Fichero de Instrucciones ");
+	wattroff(win_menu_fromfile, COLOR_PAIR(8) | A_BOLD);
+
+	// Field labels
+	mvwprintw(win_menu_fromfile, 2, 2, "Fichero: ");
+
+	// Post form, menu
+	post_form(form_menu_fromfile);
+	post_menu(menu); 
+	update_panels();
+	doupdate();
+	wrefresh(win_menu_fromfile);
+
+
+
+	/*   -----  HANDLE ----- */ 
+
+	int c;
+
+	while(1)
+	{
+		c = wgetch(win_menu_fromfile);
+
+		if( c == KEY_LEFT )
+		{
+			menu_driver(menu, REQ_LEFT_ITEM);
+		}
+		else if( c == KEY_RIGHT )
+		{
+			menu_driver(menu, REQ_RIGHT_ITEM);
+		}
+		else if( c == 127 ) // Back Space
+		{
+			form_driver(form_menu_fromfile, REQ_CLR_FIELD);
+		}
+		else if( c == 10 ) // Enter
+		{
+			if( strcmp( item_name(current_item(menu)), "Cancelar") == 0 ) // "Cancelar" option handling
+			{
+				/*    //  Wipe form and return  \\ */
+
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
+
+				// Wipe form 
+				unpost_form(form_menu_fromfile);
+				free_form(form_menu_fromfile);
+				free_field(fields_menu_fromfile[0]);
+				free_field(fields_menu_fromfile[1]);
+
+				// Wipe panel
+				del_panel(pan_menu_fromfile);
+
+				// Wipe window
+				delwin(win_menu_fromfile);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+
+				return 1;
+			}
+			else 		// "Aceptar" option handlig
+			{
+				// End fields filling
+				form_driver(form_menu_fromfile, REQ_VALIDATION); 
+				
+				// Get values from fields
+				int value1 = atoi(field_buffer(fields_menu_fromfile[0], 0));
+
+				// Validate
+				if( (value1 > 0 && value1 < 8) )
+				{
+
+					/*    //  Wipe form and return  \\ */
+
+					// Wipe menu
+					unpost_menu(menu);
+					for(i=0; i<n_options; i++)
+					{
+						free_item(items[i]);
+					}
+					free_menu(menu);
+
+					// Wipe form 
+					unpost_form(form_menu_fromfile);
+					free_form(form_menu_fromfile);
+					free_field(fields_menu_fromfile[0]);
+					free_field(fields_menu_fromfile[1]);
+
+					// Wipe panel
+					del_panel(pan_menu_fromfile);
+
+					// Wipe window
+					delwin(win_menu_fromfile);
+
+					// Refresh 
+					wrefresh(WIN_BOARD);
+					refresh();
+					touchwin(WIN_BOARD);
+					
+					execute_from_file(value1);
+					
+					return 1;
+				} 
+			}
+		}
+		else  // Filling fields
+		{
+			form_driver(form_menu_fromfile, c);
+		}
+	} 
+}
+
 
 
 
