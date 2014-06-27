@@ -38,13 +38,13 @@ typedef struct queue_t
 
 
 /* Returns a QUEUE pointer */
-queue_t* queue_new()
+queue_t* queue_new(void)
 {
 	queue_t* queue = (queue_t*) malloc(sizeof(queue_t));
 
 	// Init Queue
-	queue.head = NULL;
-	queue.tail = NULL;
+	queue -> head = NULL;
+	queue -> tail = NULL;
 }
 
 
@@ -135,24 +135,3 @@ int is_queue_empty(queue_t* queue)
 		return 0;
 	}
 }
-
-
-//int main()
-//{
-//	queue_t QUEUE;
-//	QUEUE.tail = NULL;
-//	QUEUE.head = NULL;
-//
-//	void* value = NULL;
-//
-//	enqueue(&QUEUE, value);
-//	enqueue(&QUEUE, value);
-//	enqueue(&QUEUE, value);
-//
-//	dequeue(&QUEUE);
-//	dequeue(&QUEUE);
-//	dequeue(&QUEUE);
-//
-//	return 0;
-//}
-//
