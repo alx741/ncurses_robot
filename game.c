@@ -39,6 +39,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LEFT 'l'
 
 
+/* Boolean, is a game running or not */
+char GAME_RUNING;
+
 /* BOARD MATRIX */
 char BOARD[8][8];
 
@@ -49,11 +52,12 @@ int X, Y; // Robot position
 char DIRECTION; // Robot direction
 static int is_station_below=0; // When Robot is above a station
 
-/* Empty BOARD boxes */
-void init_board()
+/* Reset all game global variables and values */
+void reset_game_values()
 {
 	int i,j;
 
+	// Reset BOARD
 	for(i=0; i<8; i++)
 	{
 		for(j=0; j<8; j++)
@@ -61,6 +65,18 @@ void init_board()
 			BOARD[i][j] = EMPTY;
 		}
 	}
+	
+	// Reset ENERGY
+	ENERGY = INIT_ENERGY;
+	ENERGY_STAT = GOOD;
+	
+	// Reset ROBOT position and direction
+	X = 0;
+	Y = 0;
+	DIRECTION = RIGHT;
+
+	// Blank the board
+	blank_board(); 
 }
 
 
@@ -83,24 +99,18 @@ void new_game(int n_barriers, int exit_x, int exit_y)
 	exit_y--;
 	
 	// Empty the BOARD and blank it
-	init_board();
-	blank_board();
+	reset_game_values();
 
 	/* Put Robot, always start at 0,0 ponting to the rigth */
 	BOARD[0][0] = RROBOT;
-	X = 0;
-	Y = 0;
-	DIRECTION = RIGHT;
-	draw_robot(0,0,RIGHT);
+	draw_robot(0,0,DIRECTION);
   
 	/* Put Exit */
 	BOARD[exit_x][exit_y] = EXIT;
 	draw_object(exit_x, exit_y, 'e');
 
 	/* Restart energy, refresh INFO window and inform in LOG window */
-	ENERGY = INIT_ENERGY;
-	ENERGY_STAT = GOOD;
-	draw_info(ENERGY,'g', 0, 0, RIGHT);
+	draw_info(ENERGY,'g', 0, 0, DIRECTION);
 	draw_log("*** NEW GAME ***");
 
 
@@ -144,6 +154,9 @@ void new_game(int n_barriers, int exit_x, int exit_y)
 			stations_allocated++;
 		}
 	}
+
+	// Enable runing game
+	GAME_RUNING=1;
 }
 
 	
@@ -154,6 +167,9 @@ void new_game(int n_barriers, int exit_x, int exit_y)
  */
 void rotate_robot(char dir)
 {
+
+	if( !GAME_RUNING ){ return; }
+
 	if( dir == RIGHT )
 	{
 		draw_log("--Girar Derecha         ");
@@ -225,8 +241,9 @@ void rotate_robot(char dir)
  * Invokes WIN and NEW GAME routines whe robot arrive the exit
  */
 int move_robot()
-{
-	
+{ 
+	if( !GAME_RUNING ){ return 0; }
+
 	// UP step
 	if( DIRECTION == UP && Y<7 )
 	{
@@ -274,7 +291,13 @@ int move_robot()
 		{
 			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
-			//TODO:  WIN ROUTINE
+			// Show WIN pop-up
+			get_winpopup(); 
+			// Reset game
+			reset_game_values();
+			// Stop game
+			GAME_RUNING=0;
+
 			return 1;
 		}
 		// Empty box found
@@ -306,7 +329,13 @@ int move_robot()
 			else
 			{
 				draw_log("--Avanzar        ");
-				//TODO: LOST ROUTINE
+				draw_log("### PARTIDA PERDIDA ###");
+				// Show LOSE pop-up
+				get_losepopup();
+				// Reset game
+				reset_game_values();
+				// Stop game
+				GAME_RUNING=0;
 				return 1;
 			}
 
@@ -367,7 +396,12 @@ int move_robot()
 		{
 			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
-			//TODO:  WIN ROUTINE
+			// Show WIN pop-up
+			get_winpopup(); 
+			// Reset game
+			reset_game_values();
+			// Stop game
+			GAME_RUNING=0;
 			return 1;
 		}
 		// Empty box found
@@ -399,7 +433,13 @@ int move_robot()
 			else
 			{
 				draw_log("--Avanzar        ");
-				//TODO: LOST ROUTINE
+				draw_log("### PARTIDA PERDIDA ###");
+				// Show LOSE pop-up
+				get_losepopup();
+				// Reset game
+				reset_game_values();
+				// Stop game
+				GAME_RUNING=0;
 				return 1;
 			}
 
@@ -460,7 +500,12 @@ int move_robot()
 		{
 			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
-			//TODO:  WIN ROUTINE
+			// Show WIN pop-up
+			get_winpopup(); 
+			// Reset game
+			reset_game_values();
+			// Stop game
+			GAME_RUNING=0;
 			return 1;
 		}
 		// Empty box found
@@ -492,7 +537,13 @@ int move_robot()
 			else
 			{
 				draw_log("--Avanzar        ");
-				//TODO: LOST ROUTINE
+				draw_log("### PARTIDA PERDIDA ###");
+				// Show LOSE pop-up
+				get_losepopup();
+				// Reset game
+				reset_game_values();
+				// Stop game
+				GAME_RUNING=0;
 				return 1;
 			}
 
@@ -553,7 +604,12 @@ int move_robot()
 		{
 			draw_log("--Avanzar        ");
 			draw_log("*** PARTIDA GANADA ***");
-			//TODO:  WIN ROUTINE
+			// Show WIN pop-up
+			get_winpopup(); 
+			// Reset game
+			reset_game_values();
+			// Stop game
+			GAME_RUNING=0;
 			return 1;
 		}
 		// Empty box found
@@ -585,7 +641,13 @@ int move_robot()
 			else
 			{
 				draw_log("--Avanzar        ");
-				//TODO: LOST ROUTINE
+				draw_log("### PARTIDA PERDIDA ###");
+				// Show LOSE pop-up
+				get_losepopup();
+				// Reset game
+				reset_game_values();
+				// Stop game
+				GAME_RUNING=0;
 				return 1;
 			}
 
@@ -610,6 +672,8 @@ int move_robot()
  */
 int teleport_robot()
 {
+	if( !GAME_RUNING ){ return 0; }
+
 	int new_x, new_y; 
 
 	// Interchange coordinates
@@ -680,7 +744,13 @@ int teleport_robot()
 		else
 		{
 			draw_log("--Teletransportar       ");
-			//TODO: LOST ROUTINE
+			draw_log("### PARTIDA PERDIDA ###");
+			// Show LOSE pop-up
+			get_losepopup();
+			// Reset game
+			reset_game_values();
+			// Stop game
+			GAME_RUNING=0;
 			return 1;
 		}
 
@@ -728,3 +798,4 @@ int move_robot_origin()
 	}
 }
 
+	
