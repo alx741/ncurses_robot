@@ -289,7 +289,7 @@ int get_help_win()
 
 	WINDOW* win_help = newwin(win_help_height, win_help_width, win_help_y, win_help_x);
 
-	mvwprintw(win_help, 0, 0, "Girar: Teclas de direccion IZQ, DER  ||  Avanzar: Barra espaciadora  ||  Salir: q");
+	mvwprintw(win_help, 0, 0, "Girar: Teclas de direccion IZQ, DER  ||  Avanzar: Barra espaciadora  || Ayuda: h ||  Salir: q");
 	mvwhline(win_help, 1, 0, ACS_HLINE, win_help_width);
 
 	wrefresh(win_help);
@@ -1585,6 +1585,52 @@ void get_losepopup()
 
 
 
+/* Create -HELP- pop-up window
+ * at center of the screen
+ * wait for user any key and then return
+ */
+void get_helppopup()
+{
+	int win_helppopup_height = 12;
+	int win_helppopup_width = 40;
+	int win_helppopup_y =  5;
+	int win_helppopup_x = (COLS-40)/2;
+
+	WINDOW* win_helppopup = newwin(win_helppopup_height, win_helppopup_width, win_helppopup_y, win_helppopup_x);
+	PANEL* pan_helppopup = new_panel(win_helppopup);
+
+
+
+	/*   -----  DRAW ----- */ 
+	
+	wattron(win_helppopup, COLOR_PAIR(8) | A_BOLD);
+	box(win_helppopup, 0, 0);
+	wattroff(win_helppopup, COLOR_PAIR(8) | A_BOLD);
+
+	mvwprintw(win_helppopup, 2, 2, "Girar izquierda: <--");
+	mvwprintw(win_helppopup, 3, 2, "Girar derecha: -->");
+	mvwprintw(win_helppopup, 4, 2, "Avanzar paso: Barra espaciadora");
+	mvwprintw(win_helppopup, 5, 2, "Salir: q");
+	mvwprintw(win_helppopup, 6, 2, "Ayuda: h");
+
+	update_panels();
+	doupdate();
+	wrefresh(win_helppopup);
+
+	getch();
+
+	// Wipe panel
+	del_panel(pan_helppopup);
+	// Wipe window
+	delwin(win_helppopup); 
+	// Refresh 
+	wrefresh(WIN_BOARD);
+	refresh();
+	touchwin(WIN_BOARD);
+	
+}
+
+
 
 
 /* ########################################### */
@@ -1644,7 +1690,7 @@ int main(void)
 
 
 	int c=0;
-	while( (c = getch()) != KEY_F(1))
+	while( (c = getch()) != 'q')
 	{
 		if( c == KEY_DOWN )
 		{
@@ -1675,6 +1721,10 @@ int main(void)
 		if( c == 32 ) // SPACE BAR
 		{
 			move_robot();
+		}
+		if( c == 'h' )
+		{
+			get_helppopup();
 		}
 
 		wrefresh(WIN_MENU);
