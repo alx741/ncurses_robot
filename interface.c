@@ -1297,7 +1297,7 @@ int get_fromfile_form()
 	/*   -----  CREATE FORM ----- */
 	// Fields config
 	FIELD* fields_menu_fromfile[2];
-	fields_menu_fromfile[0] = new_field(1,10,1,1,0,0);
+	fields_menu_fromfile[0] = new_field(1,25,1,1,0,0);
 	fields_menu_fromfile[1] = NULL;
 
 	set_field_back(fields_menu_fromfile[0], A_UNDERLINE);
@@ -1308,7 +1308,7 @@ int get_fromfile_form()
 	// Create FORM
 	FORM* form_menu_fromfile = new_form(fields_menu_fromfile);
 	set_form_win(form_menu_fromfile, win_menu_fromfile);
-	set_form_sub(form_menu_fromfile, derwin(win_menu_fromfile, 4, 15, 1, 24));
+	set_form_sub(form_menu_fromfile, derwin(win_menu_fromfile, 4, 28, 1, 10));
 
 
 
@@ -1417,43 +1417,50 @@ int get_fromfile_form()
 				form_driver(form_menu_fromfile, REQ_VALIDATION); 
 				
 				// Get values from fields
-				int value1 = atoi(field_buffer(fields_menu_fromfile[0], 0));
+				char buffer[50];
+				char* value1 = field_buffer(fields_menu_fromfile[0], 0);
 
-				// Validate
-				if( (value1 > 0 && value1 < 8) )
+				for(i=0; i<50; i++)
 				{
-
-					/*    //  Wipe form and return  \\ */
-
-					// Wipe menu
-					unpost_menu(menu);
-					for(i=0; i<n_options; i++)
+					buffer[i] = 0;
+					if( value1[i] > 41 && value1[i] < 123 )
 					{
-						free_item(items[i]);
+						buffer[i] = value1[i];
 					}
-					free_menu(menu);
+				}
+				
+				execute_from_file(buffer);
+				
 
-					// Wipe form 
-					unpost_form(form_menu_fromfile);
-					free_form(form_menu_fromfile);
-					free_field(fields_menu_fromfile[0]);
-					free_field(fields_menu_fromfile[1]);
 
-					// Wipe panel
-					del_panel(pan_menu_fromfile);
+				/*    //  Wipe form and return  \\ */
 
-					// Wipe window
-					delwin(win_menu_fromfile);
+				// Wipe menu
+				unpost_menu(menu);
+				for(i=0; i<n_options; i++)
+				{
+					free_item(items[i]);
+				}
+				free_menu(menu);
 
-					// Refresh 
-					wrefresh(WIN_BOARD);
-					refresh();
-					touchwin(WIN_BOARD);
-					
-					execute_from_file(value1);
-					
-					return 1;
-				} 
+				// Wipe form 
+				unpost_form(form_menu_fromfile);
+				free_form(form_menu_fromfile);
+				free_field(fields_menu_fromfile[0]);
+				free_field(fields_menu_fromfile[1]);
+
+				// Wipe panel
+				del_panel(pan_menu_fromfile);
+
+				// Wipe window
+				delwin(win_menu_fromfile);
+
+				// Refresh 
+				wrefresh(WIN_BOARD);
+				refresh();
+				touchwin(WIN_BOARD);
+				
+				return 1;
 			}
 		}
 		else  // Filling fields

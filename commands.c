@@ -25,11 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
-/* Read commands from FILE and fill COMMAND_QUEUE
+/* Read commands from FILE_NAME and fill COMMAND_QUEUE
  *
  * Returns 0 if fail
  */
-int fread_commands(char* FILE_)
+int fread_commands(char* file_name)
 {
 	char line[100];
 	char* command_str;
@@ -38,7 +38,7 @@ int fread_commands(char* FILE_)
 
 	// Open file
 	// int parameter;
-	FILE* file = fopen(FILE_, "r"); 
+	FILE* file = fopen(file_name, "r"); 
 	if( file == NULL ){ return 0; }
 
 	// Read file line by line
@@ -105,27 +105,3 @@ int fread_commands(char* FILE_)
 	
 	return 1;
 }
-
-		
-//int main()
-//{ 
-//	COMMANDS_QUEUE = queue_new();
-//
-//	if( ! fread_commands("test") )
-//		printf("READ COMMANDS FAIL!!\n");
-//
-//	command_t* command = (command_t*) malloc(sizeof(command_t)); 
-//
-//	do
-//	{
-//		command = (command_t*) dequeue(COMMANDS_QUEUE);
-//		if( command == NULL )
-//			printf("NUUUUUUUUUULL command\n");
-//		else
-//		{
-//			printf("comando: %d\n", command -> command);
-//			printf("parametro: %c\n", command -> parameter_char);
-//		}
-//	} 
-//	while( command != NULL );
-//}

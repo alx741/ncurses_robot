@@ -69,7 +69,14 @@ int teleport_robot();
  *
  * LOGS the movement
  */
-int move_robot_origin();
+void move_robot_origin();
+
+
+/* Reads and execute robot commands from FILE
+ *
+ * return 0 if fail
+ */
+int execute_from_file(char* file);
 
 
 #endif

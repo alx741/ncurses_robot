@@ -16,6 +16,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#include "queue.h"
+#include "commands.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Objects definitiosn */
 #define EMPTY 	0x00 // Empty Board box
@@ -765,7 +770,7 @@ int teleport_robot()
  *
  * LOGS the movement
  */
-int move_robot_origin()
+void move_robot_origin()
 {
 	draw_info(ENERGY,ENERGY_STAT, 0, 0, DIRECTION);
 	draw_log("--Ir al origen      ");
@@ -799,3 +804,55 @@ int move_robot_origin()
 }
 
 	
+/* Reads and execute robot commands from FILE
+ *
+ * return 0 if fail
+ */
+int execute_from_file(char* file)
+{
+	int i;
+	
+	// Init COMMANDS_QUEUE
+	COMMANDS_QUEUE = queue_new();
+
+	if( ! fread_commands(file) ){ return 0; }
+	
+	command_t* command = (command_t*) malloc(sizeof(command_t)); 
+	command = (command_t*) dequeue(COMMANDS_QUEUE);
+
+	while( command != NULL )
+	{ 
+		if( command -> command == C_STEP )
+		{
+			move_robot();
+		}
+		else if( command -> command == C_ROTATE )
+		{
+			if( command -> parameter_char == 'r' )
+			{
+				rotate_robot(RIGHT);
+			}
+			else
+			{
+				rotate_robot(LEFT);
+			}
+		}
+		else if( command -> command == C_JUMP )
+		{
+			for(i=0; i < (command -> parameter_int); i++)
+			{
+				move_robot();
+			}
+		}
+		else if( command -> command == C_TELEPORT )
+		{
+			teleport_robot();
+		}
+		else if( command -> command == C_ORIGIN )
+		{
+			move_robot_origin();
+		}
+
+		command = (command_t*) dequeue(COMMANDS_QUEUE);
+	} 
+}
