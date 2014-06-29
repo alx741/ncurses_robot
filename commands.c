@@ -103,5 +103,24 @@ int fread_commands(char* file_name)
 		enqueue(COMMANDS_QUEUE, (void*)command); 
 	}
 	
+	fclose(file); 
+	return 1;
+}
+
+
+
+/* Writes LOG line to FILE_NAME
+ *
+ * Returns 0 if fail
+ */
+int fwrite_log(char* file_name, char* log)
+{
+	// Open file
+	FILE* file = fopen(file_name, "a"); 
+	if( file == NULL ){ return 0; }
+
+	fputs(log, file);
+
+	fclose(file); 
 	return 1;
 }

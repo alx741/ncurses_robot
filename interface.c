@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "interface.h"
 #include "game.h"
+#include "commands.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -341,7 +342,7 @@ int get_log_win(int x, int y)
 }
 
 
-/* Writes STRING on log window
+/* Writes STRING on log window and LOG_FILE
  *
  * Returns 1 if susses
  */
@@ -368,6 +369,11 @@ int draw_log(char* string)
 	wattron(WIN_LOG, COLOR_PAIR(color_log));
 	mvwprintw(WIN_LOG, index, 4, string);
 	wattroff(WIN_LOG, COLOR_PAIR(color_log));
+
+	// Writes to LOG_FILE
+	fwrite_log(LOG_FILE, string);
+	fwrite_log(LOG_FILE, "\n");
+	
 
 	wrefresh(WIN_LOG);
 	index++;

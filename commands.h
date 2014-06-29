@@ -47,4 +47,11 @@ typedef struct command_t
 queue_t* COMMANDS_QUEUE;
 
 
+/* Writes LOG line to FILE_NAME
+ *
+ * Returns 0 if fail
+ */
+int fwrite_log(char* file_name, char* log);
+
+
 #endif

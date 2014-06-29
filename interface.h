@@ -59,6 +59,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+/* ########  LOG FILE ######### */
+#define LOG_FILE "log.txt"
+
 /* Get user interface */
 void init_interface(void);
 
