@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#include "game.h"
 #include "queue.h"
 #include "commands.h"
 
@@ -33,8 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define EXIT 	0x07 // Exit
 
 /* Game definitions */
-#define INIT_ENERGY 10 // Robot Energy
-#define ENERGY_STATIONS 2 // Energy stations charge
 #define GOOD 'g' // Good Energy level
 #define MEDIUM 'm' // Medium Energy level
 #define BAD 'b' // Bad Energy level

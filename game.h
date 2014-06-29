@@ -24,6 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef GAME_H
 #define GAME_H
 
+/* ######## ROBOT ENERGY CONFIGS ########## */
+#define INIT_ENERGY 10 // Robot Energy
+#define ENERGY_STATIONS 2 // Charge stations max energy
+
+
 /* Empty the BOARD, fills it and draw with game elements
  *
  * Put Robot at 0,0
