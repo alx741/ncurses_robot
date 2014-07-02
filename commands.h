@@ -47,6 +47,13 @@ typedef struct command_t
 queue_t* COMMANDS_QUEUE;
 
 
+/* Read commands from FILE_NAME and fill COMMAND_QUEUE
+ *
+ * Returns 0 if fail
+ */
+int fread_commands(char* file_name);
+
+
 /* Writes LOG line to FILE_NAME
  *
  * Returns 0 if fail
