@@ -621,7 +621,7 @@ int get_newgame_form()
 	set_field_back(fields_menu_newgame[0], A_UNDERLINE);
 	field_opts_on(fields_menu_newgame[0], O_EDIT);
 	field_opts_off(fields_menu_newgame[0], O_AUTOSKIP);
-	set_field_type(fields_menu_newgame[0], TYPE_INTEGER, 0, 1, 30); // Validate: Number, 1-30
+	set_field_type(fields_menu_newgame[0], TYPE_INTEGER, 0, 1, 20); // Validate: Number, 1-20
 
 	set_field_back(fields_menu_newgame[1], A_UNDERLINE);
 	field_opts_on(fields_menu_newgame[1], O_EDIT);
