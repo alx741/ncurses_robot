@@ -166,6 +166,8 @@ void new_game(int n_barriers, int exit_x, int exit_y)
 
 	// Init Hardware if possible
 	serial_init();
+	origin();
+
 }
 
 	
@@ -744,6 +746,9 @@ int teleport_robot()
 	else if( BOARD[new_x][new_y] == EMPTY )
 	{
 		draw_robot(new_x, new_y, DIRECTION);
+
+		to(new_x, new_y);
+
 		BOARD[X][Y] = EMPTY;
 		if( is_station_below )
 		{
@@ -812,6 +817,9 @@ void move_robot_origin()
 	draw_log("--Ir al origen      ");
 
 	draw_robot(0, 0, DIRECTION);
+
+	origin();
+
 	BOARD[X][Y] = EMPTY;
 	if( is_station_below )
 	{
@@ -860,6 +868,7 @@ int execute_from_file(char* file)
 	{ 
 		if( command -> command == C_STEP )
 		{
+			usleep(400000);
 			move_robot();
 		}
 		else if( command -> command == C_ROTATE )
@@ -877,6 +886,7 @@ int execute_from_file(char* file)
 		{
 			for(i=0; i < (command -> parameter_int); i++)
 			{
+				usleep(400000);
 				move_robot();
 			}
 		}

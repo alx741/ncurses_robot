@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define Y_SIZE 8
 
 // Move repeats to reach next box
-#define X_REPEATS 6
-#define Y_REPEATS 6
+#define X_REPEATS 1
+#define Y_REPEATS 1
 
 
 /* Configure serial port with
@@ -55,6 +55,20 @@ int serial_init(void);
  * Returns 0 if is not possible to move
  */
 int step(char axis,char dir);
+
+
+/* Moves hardware to 0,0
+ * 
+ * Returns 0 if is not possible to move
+ */
+int origin(void);
+
+
+/* Moves hardware to X,Y
+ * 
+ * Returns 0 if is not possible to move
+ */
+int to(int x, int y);
 
 
 #endif

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <ncurses.h>
 #include <menu.h>
@@ -989,6 +990,7 @@ int get_jump_form()
 					int i=0;
 					for(i=0;i<value1;i++)
 					{	
+						usleep(400000);
 						move_robot();
 					}
 					

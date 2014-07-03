@@ -88,6 +88,8 @@ void putchar(char c)
 int getchar(char* c)
 {
 
+	int i;
+
 	if (RCSTAbits.OERR)
 	{
 		//IN CASE OF ERROR RESET CREN
@@ -95,15 +97,10 @@ int getchar(char* c)
 		RCSTAbits.CREN=1;
 	}
 
-	if( PIR1bits.RCIF )
-	{
-		*c = RCREG;
-		return 1;
-	}
-	else
-	{
-		return 0;
-	} 
+	while( ! PIR1bits.RCIF ){ }
+
+	*c = RCREG;
+	return 1; 
 }
 
 
