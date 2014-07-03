@@ -85,7 +85,7 @@ void putchar(char c)
 }
 
 
-char getchar(void)
+int getchar(char* c)
 {
 
 	if (RCSTAbits.OERR)
@@ -95,10 +95,15 @@ char getchar(void)
 		RCSTAbits.CREN=1;
 	}
 
-	while( ! PIR1bits.RCIF );
-
-	return RCREG;
-
+	if( PIR1bits.RCIF )
+	{
+		*c = RCREG;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	} 
 }
 
 
@@ -120,11 +125,19 @@ int get_command(char* command)
 {
 	int i=0;
 	char com[8];
+	char c;
 	putchar('>');
 
 	for(i=0;i<8;i++)
 	{
-		com[i] = getchar();
+		if( getchar(&c) )
+		{
+			com[i] = c;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	//COMMAND VALIDATION
@@ -265,8 +278,4 @@ void main(void)
 
 	}
 
-}
-
-
-
-
+} 

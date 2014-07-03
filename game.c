@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "game.h"
 #include "queue.h"
 #include "commands.h"
+#include "interface.h"
+#include "hdwr/driver.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,6 +163,9 @@ void new_game(int n_barriers, int exit_x, int exit_y)
 
 	// Enable runing game
 	GAME_RUNING=1;
+
+	// Init Hardware if possible
+	serial_init();
 }
 
 	
@@ -261,6 +266,10 @@ int move_robot()
 		else if( BOARD[X][Y+1] == STATION )
 		{
 			draw_robot(X, Y+1, UP);
+			
+			// Hardware move
+			step('y','f');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -308,6 +317,10 @@ int move_robot()
 		else if( BOARD[X][Y+1] == EMPTY )
 		{
 			draw_robot(X, Y+1, UP);
+			
+			// Hardware move
+			step('y','f');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -366,6 +379,10 @@ int move_robot()
 		else if( BOARD[X][Y-1] == STATION )
 		{
 			draw_robot(X, Y-1, DOWN);
+			
+			// Hardware move
+			step('y','b');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -412,6 +429,10 @@ int move_robot()
 		else if( BOARD[X][Y-1] == EMPTY )
 		{
 			draw_robot(X, Y-1, DOWN);
+			
+			// Hardware move
+			step('y','b');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -470,6 +491,10 @@ int move_robot()
 		else if( BOARD[X+1][Y] == STATION )
 		{
 			draw_robot(X+1, Y, RIGHT);
+			
+			// Hardware move
+			step('x','f');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -516,6 +541,10 @@ int move_robot()
 		else if( BOARD[X+1][Y] == EMPTY )
 		{
 			draw_robot(X+1, Y, RIGHT);
+			
+			// Hardware move
+			step('x','f');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -574,6 +603,10 @@ int move_robot()
 		else if( BOARD[X-1][Y] == STATION )
 		{
 			draw_robot(X-1, Y, LEFT);
+			
+			// Hardware move
+			step('x','b');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{
@@ -620,6 +653,10 @@ int move_robot()
 		else if( BOARD[X-1][Y] == EMPTY )
 		{
 			draw_robot(X-1, Y, LEFT);
+			
+			// Hardware move
+			step('x','b');
+
 			BOARD[X][Y] = EMPTY;
 			if( is_station_below )
 			{

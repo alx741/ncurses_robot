@@ -1692,9 +1692,11 @@ void init_interface(void)
 int main(void)
 {
 
+	// Init NCURSES interface
 	init_interface();
 
 
+	// Keyboard input handle
 	int c=0;
 	while( (c = getch()) != 'q')
 	{
@@ -1738,7 +1740,7 @@ int main(void)
 	}
 
 
-
+	// End NCURSES interface
 	endwin();
 
 	return 0;

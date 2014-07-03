@@ -1,5 +1,20 @@
-/* file: driver.c
- */
+/*
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+				File: driver.c
+
+*/
 
 #include "driver.h"
 
@@ -7,12 +22,12 @@
 #include <termios.h>
 #include <stdio.h>
 
-//SERIAL PORT FILE
-#define COMPORT "/dev/ttyUSB0"
-
-
 //Hardware Position
 static int h_x,h_y;
+
+// COM PORT file descriptor
+int COM_FD;
+
 
 /* Configure serial port with
  *
@@ -25,19 +40,20 @@ static int h_x,h_y;
  * Read enable
  * RAW input/output
  *
- * Returns Serial Descriptor, -1 if fail
+ * Puts Serial Descriptor in COM_FD, 0 if fail
  */
 int serial_init(void)
 {
 	//Open serial port file
 	int fd = open(COMPORT, O_RDWR | O_NOCTTY | O_NDELAY);
-	if( fd < 0 ){ return -1; }
+	if( fd < 0 ){ COM_FD = -1; return 0; }
 
 	//Configure serial port
 	struct termios config;
 	if( tcgetattr(fd, &config) != 0 )
 	{
-		return -1;
+		COM_FD = -1;
+		return 0;
 	}
 
 	cfsetispeed(&config, B9600);
@@ -53,14 +69,16 @@ int serial_init(void)
 
 	if( tcsetattr(fd, TCSANOW, &config) != 0 )
 	{
-		return -1;
+		COM_FD = -1;
+		return 0;
 	}
 
 	//INIT hardware position
 	h_x=0;
 	h_y=0;
 
-	return fd; 
+	COM_FD = fd;
+	return 1; 
 }
 
 
@@ -77,14 +95,19 @@ int getxy(int* x, int* y)
 }
 
 
-/* Returns 1 if hardware is redy to recive a command */
-int wait_hw(int fd)
+/* Returns 1 if hardware is redy to recive a command 
+ * 
+ * Its a blocking function, returns only when hardware is ready
+ * */
+int wait_hw(void)
 {
 	char a=0;
 
+	if( COM_FD < 0 ){ return 0; }
+
 	while(a != '>')
 	{
-		read(fd, &a, 1);
+		read(COM_FD, &a, 1);
 	}
 	a=0;
 	return 1;
@@ -98,9 +121,11 @@ int wait_hw(int fd)
  * 
  * Returns 0 if is not possible to move
  */
-int step(char axis,char dir,int fd)
+int step(char axis,char dir)
 {
 	int i=0;
+
+	if( COM_FD < 0 ){ return 0; }
 
 	if( axis == 'x' )
 	{
@@ -108,8 +133,8 @@ int step(char axis,char dir,int fd)
 		{
 			for(i=0;i<X_REPEATS;i++)
 			{
-				wait_hw(fd);
-				write(fd, "x:f:0090", 8);
+				wait_hw();
+				write(COM_FD, "x:f:0090", 8);
 				h_x++;
 			}
 			return 1;
@@ -120,8 +145,8 @@ int step(char axis,char dir,int fd)
 		{
 			for(i=0;i<X_REPEATS;i++)
 			{ 
-				wait_hw(fd);
-				write(fd, "x:b:0090", 8);
+				wait_hw();
+				write(COM_FD, "x:b:0090", 8);
 				h_x--;
 			}
 			return 1;
@@ -136,8 +161,8 @@ int step(char axis,char dir,int fd)
 		{
 			for(i=0;i<Y_REPEATS;i++)
 			{
-				wait_hw(fd);
-				write(fd, "y:f:0790", 8);
+				wait_hw();
+				write(COM_FD, "y:f:0790", 8);
 				h_y++;
 			}
 			return 1;
@@ -148,8 +173,8 @@ int step(char axis,char dir,int fd)
 		{
 			for(i=0;i<Y_REPEATS;i++)
 			{ 
-				wait_hw(fd);
-				write(fd, "y:b:0155", 8);
+				wait_hw();
+				write(COM_FD, "y:b:0155", 8);
 				h_y--;
 			}
 			return 1;
@@ -160,45 +185,4 @@ int step(char axis,char dir,int fd)
 
 	return 1;
 
-}
-
-int main(void)
-{
-
-	int fd = serial_init();
-	if( fd>0 )
-	{
-		printf("\npuerto listo\n");
-	}
-	else
-	{
-		printf("\npuerto fallo\n");
-		return 0;
-	}
-			
-	while(1)
-	{
-		if( step('y','f',fd) )
-		{
-			printf("\nSE MOVIO\n");
-			printf("\n%d\n", h_y);
-		}else{
-			printf("\nQUIETO\n");
-		}
-
-		//if( step('x','f',fd) )
-		//{
-		//	printf("\nSE MOVIO\n");
-		//	printf("\n%d\n", h_x);
-		//}else{
-		//	printf("\nQUIETO\n");
-		//}
-		return 0;
-	}
-
-	//if( is_redy(fd) )
-	//	printf("\n\n\nREDY TO RECIVE COMMAND\n\n\n");
-	//step('x','f',fd);
-
-	return 0;
 }
