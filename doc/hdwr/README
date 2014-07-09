@@ -1,3 +1,31 @@
 Firmware
 ========
+Firmware gets commands using SERIAL cominucation with a UART peripheral of uC.
+
+The UART peripheral pins communicates with host pc usgin a USB-UART FT232 chip.
+
+Commands that uC recives is 8 bytes long:
+
+<Axis>:<Direction>:4 digits time (in miliseconds, not accurate)
+
+<x,y>:<f,b>:xxxx
+
+Examples:
+
+x:f:0100   (move in X axis, forward with a 100 milisecods motion)
+y:b:0280   (move in Y axis, backward with a 280 milisecods motion)
+
+You can try this by sending the commands directly to hardware with a serial terminal like: microcom, nanocom, picocom.
+
+
+
+
+Firmware Compiling
+==================
 Hardware firmware is written in C for SDCC compiler and PIC18F4550 microcontroller
+
+For firmware compiling use the Makefile in hdwr direcotry:
+
+$ make
+
+Then write compiler output code.hex in your PIC18F4550 uC
