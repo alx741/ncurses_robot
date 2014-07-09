@@ -1,0 +1,3 @@
+Firmware
+========
+Hardware firmware is written in C for SDCC compiler and PIC18F4550 microcontroller

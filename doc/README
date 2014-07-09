@@ -35,7 +35,7 @@ For hardware use follow -Hardware- instruntions
 
 Hardware
 ========
-For hardware implemening follow hdwr directory instructions.
+For hardware implemening follow doc/hdwr directory instructions.
 
 With implemented hardware, firmware compiled and wirtten into microcontroller
 you can use it with:
