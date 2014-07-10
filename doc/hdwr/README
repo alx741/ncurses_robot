@@ -5,6 +5,12 @@ Hardware
 -Usgin a linear motion mechanism in two axes, each axes moved by a dc motor (24V stronger one for Y and 12V for X)
 This can be implemented using old printers mechanisms (two printers). Find pics on this directory
 
+-X axis has a magnet attached
+
+-The entire mechanism is inside a homemade wooden box covered with a cardboard lid
+
+-Robot representation is a paper figure on a magnet
+
 
 
 Firmware
