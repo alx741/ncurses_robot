@@ -28,33 +28,31 @@ $ ./robot
 
 and play it!
 
-For hardware use follow -Hardware- instruntions
+For hardware use, follow -Hardware- instruntions
 
 
 
 
 Hardware
 ========
-For hardware implemening follow doc/hdwr directory instructions.
+For hardware implementing follow doc/hdwr directory instructions.
 
 With implemented hardware, firmware compiled and wirtten into microcontroller
 you can use it with:
 
-PLug USB cable in both hardware and host
+-PLug USB cable in both hardware and host
 
-by running
+-Running this you can identify if your hardware has been recognized
 
 $ lsusb
 
-you can identify if your hardware has been recognized.
+-Then identify your /dev/ttyUSBx and change COMPORT definition in hdwr/driver.h properly.
 
-Then identify your /dev/ttyUSBx and change COMPORT definition in hdwr/driver.h properly.
-
-Recompile the game
+-Recompile the game
 
 $ make
 
-and run it as root (Change this in future versions)
+-and run it as root (Change this in future versions)
 
 $ sudo ./robot
 
@@ -68,6 +66,8 @@ Daniel Campoverde Carrión [Alx741]
 
 Contact:
 alx741@riseup.net
+
+
 
 Public Key:
 
@@ -102,3 +102,11 @@ Ti+4U8Aog3BrHH4wuM6o4fMC85LKsdi4FcxHUAN1kPuH6i/PH41rmjwqOmxVLScu
 tLl8HWU3BSvOrngosfETOWI=
 =73gt
 -----END PGP PUBLIC KEY BLOCK-----
+
+
+
+
+Thanks to
+=========
+
+Cristina Balcazar 				Ascii graphics, hardware joint assitance
